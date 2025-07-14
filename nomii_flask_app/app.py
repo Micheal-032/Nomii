@@ -1,13 +1,18 @@
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session, send_file
 from datetime import datetime, timedelta
-import random
-import string
-import json
+import pandas as pd
 import os
+import json
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
+app.config['EXCEL_BASE'] = 'excels'
+os.makedirs(app.config['EXCEL_BASE'], exist_ok=True)
+
+# Create role-specific folders
+for role in ['retailers', 'suppliers', 'delivery', 'farmers']:
+    os.makedirs(os.path.join(app.config['EXCEL_BASE'], role), exist_ok=True)
 
 # In-memory "database" for demonstration
 users = {
@@ -16,6 +21,7 @@ users = {
         "password": "StrongPass123!",
         "role": "R",
         "mobile": "9876543210",
+        "aadhaarLast4": "1234",
         "gst": "22ABCDE1234F1Z5",
         "shopName": "Super Mart",
         "created_at": "2023-10-15 10:45:32"
@@ -26,10 +32,12 @@ users = {
         "role": "F",
         "fullName": "Rajesh Kumar",
         "mobile": "9123456780",
+        "aadhaarLast4": "5678",
         "village": "Green Fields",
         "landSize": "5 acres",
         "produce": "Rice, Wheat",
         "experience": "10",
+        "regId": "",
         "created_at": "2023-10-16 09:20:15"
     }
 }
@@ -44,7 +52,7 @@ def index():
 
 @app.route('/signup', methods=['POST'])
 def signup():
-    """Handle user signup for all roles"""
+    """Handle user signup with Excel generation"""
     data = request.json
     role = data.get('role')
     
@@ -56,8 +64,20 @@ def signup():
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     login_id = f"NOMII-{role}-{timestamp}"
     
+    # Determine role folder
+    role_folders = {
+        'R': 'retailers',
+        'S': 'suppliers',
+        'D': 'delivery',
+        'F': 'farmers'
+    }
+    role_folder = role_folders[role]
+    excel_filename = f"{login_id}.xlsx"
+    excel_path = os.path.join(app.config['EXCEL_BASE'], role_folder, excel_filename)
+    
     # Create user object
     user = {
+        "login_id": login_id,
         "password": data.get('password'),
         "role": role,
         "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -71,6 +91,18 @@ def signup():
             "gst": data.get('gst'),
             "shopName": data.get('shopName')
         })
+    elif role == 'S':  # Supplier
+        user.update({
+            "mobile": data.get('mobile'),
+            "gst": data.get('gst'),
+            "location": data.get('location')
+        })
+    elif role == 'D':  # Delivery
+        user.update({
+            "mobile": data.get('mobile'),
+            "license": data.get('license'),
+            "area": data.get('area')
+        })
     elif role == 'F':  # Farmer
         user.update({
             "fullName": data.get('fullName'),
@@ -82,16 +114,28 @@ def signup():
             "experience": data.get('experience'),
             "regId": data.get('regId') or ""
         })
-    # Add other roles here (S, D)
     
-    # Save user
+    # Generate Excel file in role-specific folder
+    df = pd.DataFrame([user])
+    df.to_excel(excel_path, index=False)
+    
+    # Save user to database
     users[login_id] = user
     
     return jsonify({
         "success": True,
         "loginId": login_id,
+        "excelFile": f"{role_folder}/{excel_filename}",
         "message": "Account created successfully!"
     })
+
+@app.route('/download/<path:filename>')
+def download_file(filename):
+    """Download generated Excel file"""
+    return send_file(
+        os.path.join(app.config['EXCEL_BASE'], filename),
+        as_attachment=True
+    )
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -158,10 +202,13 @@ def dashboard():
     
     # Render different dashboards based on role
     if user['role'] == 'R':
-        return f"Retailer Dashboard - Welcome {user['shopName']}!"
+        return f"Retailer Dashboard - Welcome {user.get('shopName', '')}!"
+    elif user['role'] == 'S':
+        return f"Supplier Dashboard - Welcome!"
+    elif user['role'] == 'D':
+        return f"Delivery Partner Dashboard - Welcome!"
     elif user['role'] == 'F':
-        return f"Farmer Dashboard - Welcome {user['fullName']}!"
-    # Add other roles here
+        return f"Farmer Dashboard - Welcome {user.get('fullName', '')}!"
     
     return "User Dashboard"
 

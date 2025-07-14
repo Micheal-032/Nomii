@@ -313,25 +313,30 @@ async function processSignup() {
             const submitBtn = document.querySelector('#signupSection button');
             submitBtn.classList.add('loading');
             
-            // Simulate API call with timeout
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            // Generate login ID
-            const loginId = generateLoginId(currentRole);
-            
-            // Show success popup
-            showSuccessPopup(loginId);
-            
-            // In a real app, you would send data to the server here
-            console.log('Form data to be sent:', {
-                role: currentRole,
-                ...formData,
-                loginId
+            // Send data to server
+            const response = await fetch('/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    role: currentRole,
+                    ...formData
+                })
             });
-            
-            // Reset form
-            document.getElementById('signupForm').reset();
-            
+
+            const result = await response.json();
+
+            if (result.success) {
+                // Download the Excel file
+                window.location.href = `/download/${result.excelFile}`;
+                // Show success popup after a short delay to allow download to start
+                setTimeout(() => {
+                    showSuccessPopup(result.loginId);
+                }, 1000);
+            } else {
+                showValidationErrors({ form: result.message || "Signup failed" });
+            }
         } catch (error) {
             console.error('Error:', error);
             showValidationErrors({ form: "Connection error. Please try again." });
@@ -469,18 +474,6 @@ function showValidationErrors(errors) {
     }
 }
 
-// ===== LOGIN ID GENERATION =====
-function generateLoginId(role) {
-    const now = new Date();
-    const timestamp = now.getFullYear() + 
-                     String(now.getMonth() + 1).padStart(2, '0') + 
-                     String(now.getDate()).padStart(2, '0') + 
-                     String(now.getHours()).padStart(2, '0') + 
-                     String(now.getMinutes()).padStart(2, '0') + 
-                     String(now.getSeconds()).padStart(2, '0');
-    return `NOMII-${role}-${timestamp}`;
-}
-
 // ===== POPUP MANAGEMENT =====
 function showSuccessPopup(loginId) {
     elements.generatedLoginId.textContent = loginId;
@@ -548,11 +541,21 @@ async function processLogin() {
         const loginBtn = document.querySelector('#loginSection button');
         loginBtn.classList.add('loading');
         
-        // Simulate API call with timeout
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // In a real app, you would verify credentials with the server
-        if (loginId.startsWith('NOMII-') && password.length >= 8) {
+        // Send credentials to server
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                loginId,
+                password
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
             // Successful login
             loginAttempts = 0;
             localStorage.removeItem('loginAttempts');
@@ -561,12 +564,12 @@ async function processLogin() {
             // Store session
             localStorage.setItem('nomiiSession', JSON.stringify({
                 loginId,
-                role: loginId.split('-')[1],
+                role: result.role,
                 timestamp: Date.now()
             }));
             
-            alert('Login successful! Redirecting to dashboard...');
-            // window.location.href = '/dashboard';
+            // Redirect to dashboard
+            window.location.href = result.redirect;
         } else {
             // Failed login
             loginAttempts++;
@@ -613,7 +616,7 @@ function checkSession() {
         // Check if session is still valid (less than 24 hours old)
         if (Date.now() - session.timestamp < 24 * 60 * 60 * 1000) {
             // Redirect to dashboard
-            // window.location.href = '/dashboard';
+            window.location.href = '/dashboard';
         }
     }
     
