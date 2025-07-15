@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nomii - Profit Analytics</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <!-- Dashboard Container -->
+    <div class="dashboard">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i>📊</i>
+                    <span>Nomii Retail</span>
+                </div>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <i>🏠</i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="inventory.html" class="nav-link">
+                        <i>📦</i>
+                        <span>Inventory</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="orders.html" class="nav-link">
+                        <i>🧠</i>
+                        <span>Smart Orders</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="suppliers.html" class="nav-link">
+                        <i>🤝</i>
+                        <span>Suppliers</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <i>💰</i>
+                        <span>Profit Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="invoices.html" class="nav-link">
+                        <i>📄</i>
+                        <span>GST Invoice</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i>💡</i>
+                        <span>Business Tips</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <i>⚙️</i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+        
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="welcome">Welcome back, <span id="retailer-name">Sarah</span>!</div>
+                <div class="date" id="current-date">Monday, October 16, 2023</div>
+            </div>
+            
+            <div class="topbar-right">
+                <div class="profile">
+                    <div class="profile-img" id="profile-initials">SR</div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="profile-fullname">Sarah Retailer</div>
+                        <div class="profile-shop" id="shop-info">SuperMart #ID-2345 | Mumbai</div>
+                    </div>
+                </div>
+                <button class="logout-btn" title="Logout">🔒</button>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <section class="dashboard-section">
+                <h1 class="dashboard-title"><i>💰</i> Profit Analytics</h1>
+                
+                <!-- Profit Overview Cards -->
+                <div class="stats-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Gross Profit</div>
+                            <div class="card-icon" style="background: rgba(46, 204, 113, 0.1); color: #27ae60;">💰</div>
+                        </div>
+                        <div class="card-value" id="gross-profit">₹1,24,560</div>
+                        <div class="card-footer positive" id="gross-profit-change">↑ 8.5% from last month</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Net Profit</div>
+                            <div class="card-icon" style="background: rgba(41, 128, 185, 0.1); color: #2980b9;">💵</div>
+                        </div>
+                        <div class="card-value" id="net-profit">₹98,450</div>
+                        <div class="card-footer positive" id="net-profit-change">↑ 7.2% from last month</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Profit Margin</div>
+                            <div class="card-icon" style="background: rgba(155, 89, 182, 0.1); color: #8e44ad;">📈</div>
+                        </div>
+                        <div class="card-value" id="profit-margin">22.8%</div>
+                        <div class="card-footer negative" id="margin-change">↓ 1.2% from last month</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Top Product</div>
+                            <div class="card-icon" style="background: rgba(241, 196, 15, 0.1); color: #f39c12;">🏆</div>
+                        </div>
+                        <div class="card-value" id="top-product">Amul Cheese</div>
+                        <div class="card-footer" id="top-product-profit">₹12,450 profit</div>
+                    </div>
+                </div>
+                
+                <!-- Profit Trends -->
+                <div class="charts-row">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">Profit Trend (Last 6 Months)</div>
+                            <div class="chart-actions">
+                                <button class="chart-btn active" data-period="6">6M</button>
+                                <button class="chart-btn" data-period="12">1Y</button>
+                                <button class="chart-btn" data-period="24">2Y</button>
+                            </div>
+                        </div>
+                        <div class="chart-placeholder">
+                            <canvas id="profitTrendChart" height="300"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">Profit by Category</div>
+                            <div class="chart-actions">
+                                <button class="chart-btn active" data-metric="profit">Profit</button>
+                                <button class="chart-btn" data-metric="margin">Margin</button>
+                            </div>
+                        </div>
+                        <div class="chart-placeholder">
+                            <canvas id="categoryProfitChart" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Margin Analysis -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">Margin Analysis</div>
+                        <div class="table-actions">
+                            <button class="btn btn-outline" id="export-margin">
+                                <i>📥</i> Export Report
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Purchase Price</th>
+                                    <th>Selling Price</th>
+                                    <th>Margin</th>
+                                    <th>Sales (30d)</th>
+                                    <th>Profit Contribution</th>
+                                    <th>Margin Health</th>
+                                    <th>AI Suggestion</th>
+                                </tr>
+                            </thead>
+                            <tbody id="margin-analysis-body">
+                                <!-- Margin analysis will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Profit Optimization -->
+                <div class="charts-row">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">Profit vs. Cost Breakdown</div>
+                        </div>
+                        <div class="chart-placeholder">
+                            <canvas id="costBreakdownChart" height="300"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">Price Elasticity Analysis</div>
+                        </div>
+                        <div class="chart-placeholder">
+                            <canvas id="elasticityChart" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI Profit Recommendations -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">AI Profit Optimization Tips</div>
+                    </div>
+                    
+                    <div id="profit-tips-container">
+                        <div class="alert alert-info">
+                            <div class="alert-icon">💡</div>
+                            <div class="alert-content">
+                                <h4>Pricing Optimization Opportunity</h4>
+                                <p>Increasing prices by 2% on snacks category could boost profits by ₹8,400/month with minimal sales impact.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-success">
+                            <div class="alert-icon">💡</div>
+                            <div class="alert-content">
+                                <h4>Supplier Cost Reduction</h4>
+                                <p>Negotiate with Fresh Foods Ltd. for 5% discount on dairy products to increase margins by ₹6,200/month.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <div class="alert-icon">💡</div>
+                            <div class="alert-content">
+                                <h4>Low-Margin Products</h4>
+                                <p>Consider discontinuing 'Green Tea Pack' with only 8% margin. Replace with higher-margin alternatives.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <!-- Same toast as in index.html -->
+    </div>
+    
+    <!-- JavaScript Files -->
+    <script src="assets/js/data-manager.js"></script>
+    <script src="assets/js/ai-logic.js"></script>
+    <script src="assets/js/chart.js"></script>
+    <script src="assets/js/profits.js"></script>
+</body>
+</html>

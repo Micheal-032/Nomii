@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nomii - System Settings</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <style>
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--gray);
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+        }
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .metric-card {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .metric-label {
+            font-size: 14px;
+            color: var(--gray);
+        }
+    </style>
+</head>
+<body>
+    <!-- Dashboard Container -->
+    <div class="dashboard">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i>📊</i>
+                    <span>Nomii Retail</span>
+                </div>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <i>🏠</i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="inventory.html" class="nav-link">
+                        <i>📦</i>
+                        <span>Inventory</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="orders.html" class="nav-link">
+                        <i>🧠</i>
+                        <span>Smart Orders</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="suppliers.html" class="nav-link">
+                        <i>🤝</i>
+                        <span>Suppliers</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="profits.html" class="nav-link">
+                        <i>💰</i>
+                        <span>Profit Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="invoices.html" class="nav-link">
+                        <i>📄</i>
+                        <span>GST Invoice</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i>💡</i>
+                        <span>Business Tips</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <i>⚙️</i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+        
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="welcome">Welcome back, <span id="retailer-name">Sarah</span>!</div>
+                <div class="date" id="current-date">Monday, October 16, 2023</div>
+            </div>
+            
+            <div class="topbar-right">
+                <div class="profile">
+                    <div class="profile-img" id="profile-initials">SR</div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="profile-fullname">Sarah Retailer</div>
+                        <div class="profile-shop" id="shop-info">SuperMart #ID-2345 | Mumbai</div>
+                    </div>
+                </div>
+                <button class="logout-btn" title="Logout">🔒</button>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <section class="dashboard-section">
+                <h1 class="dashboard-title"><i>⚙️</i> System Settings</h1>
+                
+                <!-- Settings Tabs -->
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="general">General</button>
+                    <button class="tab-btn" data-tab="users">Users</button>
+                    <button class="tab-btn" data-tab="data">Data Management</button>
+                    <button class="tab-btn" data-tab="integration">Integrations</button>
+                    <button class="tab-btn" data-tab="notifications">Notifications</button>
+                    <button class="tab-btn" data-tab="billing">Billing</button>
+                </div>
+                
+                <!-- General Settings -->
+                <div class="tab-content active" id="general-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Store Information</div>
+                        </div>
+                        <div class="card-body" style="padding: 20px;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Store Name</label>
+                                    <input type="text" class="form-control" id="store-name" value="SuperMart">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Store ID</label>
+                                    <input type="text" class="form-control" id="store-id" value="#ID-2345" readonly>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Address</label>
+                                    <textarea class="form-control" id="store-address" rows="2">123 Retail Street, Mumbai</textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">GSTIN</label>
+                                    <input type="text" class="form-control" id="store-gstin" value="27ABCDE1234F1Z5">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Business Type</label>
+                                    <select class="form-control" id="business-type">
+                                        <option value="retail">Retail Store</option>
+                                        <option value="supermarket">Supermarket</option>
+                                        <option value="wholesale">Wholesale</option>
+                                        <option value="convenience">Convenience Store</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 20px;">
+                        <div class="card-header">
+                            <div class="card-title">Preferences</div>
+                        </div>
+                        <div class="card-body" style="padding: 20px;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Default Currency</label>
+                                    <select class="form-control" id="default-currency">
+                                        <option value="INR" selected>Indian Rupee (₹)</option>
+                                        <option value="USD">US Dollar ($)</option>
+                                        <option value="EUR">Euro (€)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Date Format</label>
+                                    <select class="form-control" id="date-format">
+                                        <option value="dd-mm-yyyy">DD-MM-YYYY</option>
+                                        <option value="mm-dd-yyyy">MM-DD-YYYY</option>
+                                        <option value="yyyy-mm-dd">YYYY-MM-DD</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Time Zone</label>
+                                    <select class="form-control" id="time-zone">
+                                        <option value="IST" selected>India Standard Time (GMT+5:30)</option>
+                                        <option value="PST">Pacific Standard Time (GMT-8)</option>
+                                        <option value="EST">Eastern Standard Time (GMT-5)</option>
+                                        <option value="GMT">Greenwich Mean Time (GMT)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Theme</label>
+                                    <select class="form-control" id="theme">
+                                        <option value="light">Light</option>
+                                        <option value="dark">Dark</option>
+                                        <option value="system">System Default</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-footer" style="margin-top: 20px; display: flex; justify-content: flex-end;">
+                        <button class="btn btn-outline">Cancel</button>
+                        <button class="btn btn-primary" style="margin-left: 10px;">Save Preferences</button>
+                    </div>
+                </div>
+                
+                <!-- User Management -->
+                <div class="tab-content" id="users-tab" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">User Accounts</div>
+                        </div>
+                        <div class="card-body" style="padding: 20px;">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Last Active</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Sarah Retailer</td>
+                                            <td>sarah@supermart.com</td>
+                                            <td>Owner</td>
+                                            <td>Today, 09:45</td>
+                                            <td><span class="badge badge-success">Active</span></td>
+                                            <td>
+                                                <button class="action-btn">✏️</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Raj Manager</td>
+                                            <td>raj@supermart.com</td>
+                                            <td>Manager</td>
+                                            <td>Yesterday, 17:30</td>
+                                            <td><span class="badge badge-success">Active</span></td>
+                                            <td>
+                                                <button class="action-btn">✏️</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Priya Cashier</td>
+                                            <td>priya@supermart.com</td>
+                                            <td>Cashier</td>
+                                            <td>Oct 15, 2023</td>
+                                            <td><span class="badge badge-warning">Inactive</span></td>
+                                            <td>
+                                                <button class="action-btn">✏️</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <button class="btn btn-primary" style="margin-top: 20px;">
+                                <i>➕</i> Add New User
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 20px;">
+                        <div class="card-header">
+                            <div class="card-title">Roles & Permissions</div>
+                        </div>
+                        <div class="card-body" style="padding: 20px;">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Role</th>
+                                            <th>Dashboard</th>
+                                            <th>Inventory</th>
+                                            <th>Orders</th>
+                                            <th>Suppliers</th>
+                                            <th>Reports</th>
+                                            <th>Invoices</th>
+                                            <th>Settings</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Owner</td>
+                                            <td>✓</td>
+                                            <td>✓</td>
+                                            <td>✓</td>
+                                            <td>✓</td>
+                                            <td>✓</td>
+                                            <td>✓</td>
+                                            <td>✓</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Manager</td>
+                                            <td>✓</td>
+                                            <td>✓</td>
+                                            <td>✓</td>
+                                            <td>✓</td>
+                                            <td>✓</td>
+                                            <td>✓</td>
+                                            <td>✗</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Cashier</td>
+                                            <td>✗</td>
+                                            <td>✗</td>
+                                            <td>✗</td>
+                                            <td>✗</td>
+                                            <td>✗</td>
+                                            <td>✓</td>
+                                            <td>✗</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Management -->
+                <div class="tab-content" id="data-tab" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Data Backup</div>
+                        </div>
+                        <div class="card-body" style="padding: 20px;">
+                            <div class="form-group">
+                                <label class="form-label">Last Backup</label>
+                                <p>October 15, 2023 at 02:30 AM</p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Backup Frequency</label>
+                                <select class="form-control" id="backup-frequency">
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly" selected>Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Backup Location</label>
+                                <div class="form-row">
+                                    <div class="form-group" style="flex: 1;">
+                                        <select class="form-control" id="backup-location">
+                                            <option value="local">Local Device</option>
+                                            <option value="google">Google Drive</option>
+                                            <option value="dropbox">Dropbox</option>
+                                            <option value="onedrive">OneDrive</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn btn-outline" style="margin-left: 10px;">
+                                        <i>🔗</i> Connect
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary">
+                                <i>💾</i> Backup Now
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 20px;">
+                        <div class="card-header">
+                            <div class="card-title">Data Import/Export</div>
+                        </div>
+                        <div class="card-body" style="padding: 20px;">
+                            <div class="form-row">
+                                <div class="form-group" style="flex: 1;">
+                                    <label class="form-label">Import Data</label>
+                                    <input type="file" class="form-control">
+                                    <small>Supported formats: CSV, Excel</small>
+                                </div>
+                                <button class="btn btn-outline" style="align-self: flex-end; margin-left: 10px;">
+                                    Import
+                                </button>
+                            </div>
+                            
+                            <div class="form-row" style="margin-top: 20px;">
+                                <div class="form-group" style="flex: 1;">
+                                    <label class="form-label">Export Data</label>
+                                    <select class="form-control" id="export-data">
+                                        <option value="inventory">Inventory</option>
+                                        <option value="suppliers">Suppliers</option>
+                                        <option value="orders">Orders</option>
+                                        <option value="sales">Sales Data</option>
+                                        <option value="all">All Data</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-outline" style="align-self: flex-end; margin-left: 10px;">
+                                    Export
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 20px; border-left: 4px solid var(--danger);">
+                        <div class="card-header" style="color: var(--danger);">
+                            <div class="card-title">Danger Zone</div>
+                        </div>
+                        <div class="card-body" style="padding: 20px;">
+                            <div class="form-group">
+                                <label class="form-label">Reset All Data</label>
+                                <p>This will delete all your data and restore the application to its initial state.</p>
+                                <button class="btn btn-outline" style="border-color: var(--danger); color: var(--danger);">
+                                    <i>🔄</i> Reset Data
+                                </button>
+                            </div>
+                            
+                            <div class="form-group" style="margin-top: 20px;">
+                                <label class="form-label">Delete Account</label>
+                                <p>Permanently delete your account and all associated data.</p>
+                                <button class="btn btn-outline" style="border-color: var(--danger); color: var(--danger);">
+                                    <i>🗑️</i> Delete Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Integration Settings -->
+                <div class="tab-content" id="integration-tab" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Payment Gateways</div>
+                        </div>
+                        <div class="card-body" style="padding: 20px;">
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="razorpay">
+                                    <label class="form-check-label" for="razorpay">Razorpay</label>
+                                </div>
+                                <div class="form-row" style="margin-top: 10px; display: none;" id="razorpay-details">
+                                    <div class="form-group">
+                                        <label class="form-label">API Key</label>
+                                        <input type="text" class="form-control" placeholder="Enter Razorpay API Key">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Secret Key</label>
+                                        <input type="password" class="form-control" placeholder="Enter Razorpay Secret Key">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group" style="margin-top: 20px;">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="paytm">
+                                    <label class="form-check-label" for="paytm">Paytm</label>
+                                </div>
+                                <div class="form-row" style="margin-top: 10px; display: none;" id="paytm-details">
+                                    <div class="form-group">
+                                        <label class="form-label">Merchant ID</label>
+                                        <input type="text" class="form-control" placeholder="Enter Paytm Merchant ID">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Merchant Key</label>
+                                        <input type="password" class="form-control" placeholder="Enter Paytm Merchant Key">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group" style="margin-top: 20px;">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="stripe">
+                                    <label class="form-check-label" for="stripe">Stripe</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 20px;">
+                        <div class="card-header">
+                            <div class="card-title">Accounting Software</div>
+                        </div>
+                        <div class="card-body" style="padding: 20px;">
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="tally">
+                                    <label class="form-check-label" for="tally">Tally ERP</label>
+                                </div>
+                                <div class="form-row" style="margin-top: 10px; display: none;" id="tally-details">
+                                    <div class="form-group">
+                                        <label class="form-label">Server Address</label>
+                                        <input type="text" class="form-control" placeholder="Enter Tally Server Address">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Port</label>
+                                        <input type="text" class="form-control" placeholder="Enter Port" value="9000">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group" style="margin-top: 20px;">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="quickbooks">
+                                    <label class="form-check-label" for="quickbooks">QuickBooks</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Other tabs would go here with similar structure -->
+                
+            </section>
+        </main>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <!-- Same toast as in index.html -->
+    </div>
+    
+    <!-- Add User Modal -->
+    <div class="form-modal" id="add-user-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New User</h3>
+                <button class="modal-close" id="close-add-user">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="user-name" placeholder="Enter full name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="user-email" placeholder="Enter email">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <select class="form-control" id="user-role">
+                            <option value="owner">Owner</option>
+                            <option value="manager">Manager</option>
+                            <option value="cashier">Cashier</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="user-phone" placeholder="Enter phone">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" id="user-password" placeholder="Create password">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Permissions</label>
+                    <div class="permissions-grid">
+                        <!-- Permissions will be listed here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-footer">
+                <button class="btn btn-outline" id="cancel-add-user">Cancel</button>
+                <button class="btn btn-primary" id="save-user">Add User</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript Files -->
+    <script src="assets/js/data-manager.js"></script>
+    <script src="assets/js/settings.js"></script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nomii - Inventory Management</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <!-- Dashboard Container -->
+    <div class="dashboard">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i>📊</i>
+                    <span>Nomii Retail</span>
+                </div>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <i>🏠</i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <i>📦</i>
+                        <span>Inventory</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="orders.html" class="nav-link">
+                        <i>🧠</i>
+                        <span>Smart Orders</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="suppliers.html" class="nav-link">
+                        <i>🤝</i>
+                        <span>Suppliers</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="profits.html" class="nav-link">
+                        <i>📊</i>
+                        <span>Profit Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="invoices.html" class="nav-link">
+                        <i>📄</i>
+                        <span>GST Invoice</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i>💡</i>
+                        <span>Business Tips</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <i>⚙️</i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+        
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="welcome">Welcome back, <span id="retailer-name">Sarah</span>!</div>
+                <div class="date" id="current-date">Monday, October 16, 2023</div>
+            </div>
+            
+            <div class="topbar-right">
+                <div class="profile">
+                    <div class="profile-img" id="profile-initials">SR</div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="profile-fullname">Sarah Retailer</div>
+                        <div class="profile-shop" id="shop-info">SuperMart #ID-2345 | Mumbai</div>
+                    </div>
+                </div>
+                <button class="logout-btn" title="Logout">🔒</button>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <section class="dashboard-section">
+                <h1 class="dashboard-title"><i>📦</i> Inventory Management</h1>
+                
+                <!-- Inventory Filters -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="card-header">
+                        <div class="card-title">Filter Inventory</div>
+                    </div>
+                    <div class="card-body" style="padding: 20px;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Category</label>
+                                <select class="form-control" id="filter-category">
+                                    <option value="">All Categories</option>
+                                    <option value="Dairy">Dairy</option>
+                                    <option value="Bakery">Bakery</option>
+                                    <option value="Beverages">Beverages</option>
+                                    <option value="Snacks">Snacks</option>
+                                    <option value="Fruits">Fruits</option>
+                                    <option value="Vegetables">Vegetables</option>
+                                    <option value="Personal Care">Personal Care</option>
+                                    <option value="Household">Household</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Stock Status</label>
+                                <select class="form-control" id="filter-stock">
+                                    <option value="">All Items</option>
+                                    <option value="low">Low Stock (<10)</option>
+                                    <option value="critical">Critical Stock (<5)</option>
+                                    <option value="out">Out of Stock</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Expiry Status</label>
+                                <select class="form-control" id="filter-expiry">
+                                    <option value="">All Items</option>
+                                    <option value="expired">Expired</option>
+                                    <option value="soon">Expiring Soon (7 days)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Inventory Actions -->
+                <div class="table-container" style="margin-bottom: 20px;">
+                    <div class="table-header">
+                        <div class="table-title">Inventory Actions</div>
+                        <div class="table-actions">
+                            <button class="btn btn-outline" id="export-inventory">
+                                <i>📥</i> Export CSV
+                            </button>
+                            <button class="btn btn-primary" id="add-item-btn">
+                                <i>➕</i> Add Item
+                            </button>
+                            <button class="btn btn-warning" id="bulk-update-btn">
+                                <i>🔄</i> Bulk Update
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Inventory Table -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">All Inventory Items</div>
+                        <div class="table-actions">
+                            <input type="text" class="form-control" id="inventory-search" placeholder="Search inventory..." style="width: 250px;">
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Product Name</th>
+                                    <th>Category</th>
+                                    <th>Stock</th>
+                                    <th>Purchase Price</th>
+                                    <th>Selling Price</th>
+                                    <th>Margin</th>
+                                    <th>Expiry Date</th>
+                                    <th>Supplier</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-table-body">
+                                <!-- Inventory items will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="table-footer" style="padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+                        <div class="table-info" id="inventory-info">
+                            Showing 1 to 10 of 142 items
+                        </div>
+                        <div class="pagination">
+                            <button class="btn btn-outline" id="prev-page">Previous</button>
+                            <span style="margin: 0 10px;" id="page-info">Page 1 of 15</span>
+                            <button class="btn btn-outline" id="next-page">Next</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Low Stock Alerts -->
+                <div class="chart-container" style="margin-top: 30px;">
+                    <div class="chart-header">
+                        <div class="chart-title">AI Stock Recommendations</div>
+                    </div>
+                    
+                    <div id="stock-alerts-container">
+                        <!-- AI stock alerts will be populated here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Add Item Modal -->
+    <div class="form-modal" id="add-item-modal">
+        <!-- Same modal as in index.html -->
+    </div>
+    
+    <!-- Edit Item Modal -->
+    <div class="form-modal" id="edit-item-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Inventory Item</h3>
+                <button class="modal-close" id="close-edit-item-modal">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <input type="hidden" id="edit-item-id">
+                <!-- Same form fields as add item modal -->
+            </div>
+            
+            <div class="form-footer">
+                <button class="btn btn-outline" id="cancel-edit-item">Cancel</button>
+                <button class="btn btn-primary" id="save-edit-item">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bulk Update Modal -->
+    <div class="form-modal" id="bulk-update-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Bulk Update Inventory</h3>
+                <button class="modal-close" id="close-bulk-update-modal">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Select Action</label>
+                    <select class="form-control" id="bulk-action">
+                        <option value="">Select action</option>
+                        <option value="price-increase">Increase Prices by %</option>
+                        <option value="price-decrease">Decrease Prices by %</option>
+                        <option value="restock">Restock Items</option>
+                        <option value="category">Change Category</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="bulk-action-params" style="display: none;">
+                    <!-- Dynamic parameters will appear here -->
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Select Items</label>
+                    <select class="form-control" id="bulk-items-select" multiple style="height: 150px;">
+                        <!-- Items will be populated by JavaScript -->
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-footer">
+                <button class="btn btn-outline" id="cancel-bulk-update">Cancel</button>
+                <button class="btn btn-primary" id="apply-bulk-update">Apply Changes</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <!-- Same toast as in index.html -->
+    </div>
+    
+    <!-- JavaScript Files -->
+    <script src="assets/js/data-manager.js"></script>
+    <script src="assets/js/ai-logic.js"></script>
+    <script src="assets/js/inventory.js"></script>
+</body>
+</html>

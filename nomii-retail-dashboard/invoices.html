@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nomii - GST Invoice Generator</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <style>
+        .invoice-preview {
+            background: white;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        .invoice-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        .invoice-meta {
+            text-align: right;
+        }
+        .invoice-addresses {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .address-box {
+            width: 48%;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        .address-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .invoice-table th {
+            background: #f5f5f5;
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        .invoice-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .invoice-totals {
+            width: 300px;
+            margin-left: auto;
+            border-collapse: collapse;
+        }
+        .invoice-totals td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        .invoice-totals td:first-child {
+            font-weight: bold;
+            background: #f5f5f5;
+        }
+        .invoice-footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #777;
+        }
+        .signature-area {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .signature-box {
+            width: 200px;
+            border-top: 1px solid #333;
+            padding-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Dashboard Container -->
+    <div class="dashboard">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i>📊</i>
+                    <span>Nomii Retail</span>
+                </div>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <i>🏠</i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="inventory.html" class="nav-link">
+                        <i>📦</i>
+                        <span>Inventory</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="orders.html" class="nav-link">
+                        <i>🧠</i>
+                        <span>Smart Orders</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="suppliers.html" class="nav-link">
+                        <i>🤝</i>
+                        <span>Suppliers</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="profits.html" class="nav-link">
+                        <i>📊</i>
+                        <span>Profit Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <i>📄</i>
+                        <span>GST Invoice</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i>💡</i>
+                        <span>Business Tips</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <i>⚙️</i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+        
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="welcome">Welcome back, <span id="retailer-name">Sarah</span>!</div>
+                <div class="date" id="current-date">Monday, October 16, 2023</div>
+            </div>
+            
+            <div class="topbar-right">
+                <div class="profile">
+                    <div class="profile-img" id="profile-initials">SR</div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="profile-fullname">Sarah Retailer</div>
+                        <div class="profile-shop" id="shop-info">SuperMart #ID-2345 | Mumbai</div>
+                    </div>
+                </div>
+                <button class="logout-btn" title="Logout">🔒</button>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <section class="dashboard-section">
+                <h1 class="dashboard-title"><i>📄</i> GST Invoice Generator</h1>
+                
+                <!-- Invoice Generator -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Create New Invoice</div>
+                    </div>
+                    <div class="card-body" style="padding: 20px;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Customer Name</label>
+                                <input type="text" class="form-control" id="customer-name" placeholder="Enter customer name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Customer GSTIN (if available)</label>
+                                <input type="text" class="form-control" id="customer-gstin" placeholder="Enter GSTIN">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Invoice Date</label>
+                                <input type="date" class="form-control" id="invoice-date">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Due Date</label>
+                                <input type="date" class="form-control" id="due-date">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Add Products</label>
+                            <div style="display: flex; gap: 10px;">
+                                <select class="form-control" id="product-select" style="flex: 3;">
+                                    <option value="">Select product</option>
+                                    <!-- Products will be populated by JavaScript -->
+                                </select>
+                                <input type="number" class="form-control" id="product-qty" placeholder="Qty" style="flex: 1;">
+                                <button class="btn btn-primary" id="add-product-btn" style="flex: 1;">Add</button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive" style="margin-top: 20px;">
+                            <table class="table" id="invoice-items-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Price</th>
+                                        <th>Qty</th>
+                                        <th>GST %</th>
+                                        <th>Total</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="invoice-items-body">
+                                    <!-- Invoice items will be added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="form-footer" style="margin-top: 20px;">
+                            <button class="btn btn-outline" id="clear-invoice">Clear</button>
+                            <button class="btn btn-primary" id="generate-invoice-btn">Generate Invoice</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Invoice Preview -->
+                <div class="invoice-preview" id="invoice-preview" style="display: none;">
+                    <div class="invoice-header">
+                        <div>
+                            <div class="invoice-title">TAX INVOICE</div>
+                            <div>SuperMart #ID-2345</div>
+                            <div>GSTIN: 27ABCDE1234F1Z5</div>
+                        </div>
+                        <div class="invoice-meta">
+                            <div><strong>Invoice #:</strong> <span id="invoice-number">INV-2023-001</span></div>
+                            <div><strong>Date:</strong> <span id="invoice-date-display">16-Oct-2023</span></div>
+                            <div><strong>Due Date:</strong> <span id="invoice-due-display">30-Oct-2023</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="invoice-addresses">
+                        <div class="address-box">
+                            <div class="address-title">Sold By:</div>
+                            <div>SuperMart</div>
+                            <div>123 Retail Street, Mumbai</div>
+                            <div>Maharashtra - 400001</div>
+                            <div>GSTIN: 27ABCDE1234F1Z5</div>
+                        </div>
+                        <div class="address-box">
+                            <div class="address-title">Billed To:</div>
+                            <div id="invoice-customer-name">Customer Name</div>
+                            <div id="invoice-customer-address">Customer Address</div>
+                            <div id="invoice-customer-gstin">GSTIN: </div>
+                        </div>
+                    </div>
+                    
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Description</th>
+                                <th>HSN/SAC</th>
+                                <th>Qty</th>
+                                <th>Rate (₹)</th>
+                                <th>Taxable Value (₹)</th>
+                                <th>GST %</th>
+                                <th>Tax Amount (₹)</th>
+                                <th>Total (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoice-preview-items">
+                            <!-- Invoice items will be populated here -->
+                        </tbody>
+                    </table>
+                    
+                    <table class="invoice-totals">
+                        <tr>
+                            <td>Subtotal:</td>
+                            <td id="invoice-subtotal">₹0.00</td>
+                        </tr>
+                        <tr>
+                            <td>CGST (9%):</td>
+                            <td id="invoice-cgst">₹0.00</td>
+                        </tr>
+                        <tr>
+                            <td>SGST (9%):</td>
+                            <td id="invoice-sgst">₹0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Total Tax:</td>
+                            <td id="invoice-tax">₹0.00</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Grand Total:</strong></td>
+                            <td id="invoice-total">₹0.00</td>
+                        </tr>
+                    </table>
+                    
+                    <div class="signature-area">
+                        <div class="signature-box">
+                            Customer Signature
+                        </div>
+                        <div class="signature-box">
+                            For SuperMart
+                        </div>
+                    </div>
+                    
+                    <div class="invoice-footer">
+                        Thank you for your business! | Terms: Payment due within 14 days
+                    </div>
+                </div>
+                
+                <!-- Invoice Actions -->
+                <div class="table-container" style="margin-top: 30px; display: none;" id="invoice-actions">
+                    <div class="table-header">
+                        <div class="table-title">Invoice Actions</div>
+                        <div class="table-actions">
+                            <button class="btn btn-outline" id="print-invoice">
+                                <i>🖨️</i> Print Invoice
+                            </button>
+                            <button class="btn btn-outline" id="download-pdf">
+                                <i>📥</i> Download PDF
+                            </button>
+                            <button class="btn btn-primary" id="save-invoice">
+                                <i>💾</i> Save Invoice
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Invoices -->
+                <div class="table-container" style="margin-top: 30px;">
+                    <div class="table-header">
+                        <div class="table-title">Recent Invoices</div>
+                        <div class="table-actions">
+                            <input type="text" class="form-control" id="invoice-search" placeholder="Search invoices..." style="width: 250px;">
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Invoice #</th>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Amount</th>
+                                    <th>GST</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoices-table-body">
+                                <!-- Invoices will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <!-- Same toast as in index.html -->
+    </div>
+    
+    <!-- JavaScript Files -->
+    <script src="assets/js/data-manager.js"></script>
+    <script src="assets/js/invoices.js"></script>
+</body>
+</html>

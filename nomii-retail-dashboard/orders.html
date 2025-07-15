@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nomii - Smart Orders</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <!-- Dashboard Container -->
+    <div class="dashboard">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i>📊</i>
+                    <span>Nomii Retail</span>
+                </div>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <i>🏠</i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="inventory.html" class="nav-link">
+                        <i>📦</i>
+                        <span>Inventory</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <i>🧠</i>
+                        <span>Smart Orders</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="suppliers.html" class="nav-link">
+                        <i>🤝</i>
+                        <span>Suppliers</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="profits.html" class="nav-link">
+                        <i>💰</i>
+                        <span>Profit Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="invoices.html" class="nav-link">
+                        <i>📄</i>
+                        <span>GST Invoice</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i>💡</i>
+                        <span>Business Tips</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <i>⚙️</i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+        
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="welcome">Welcome back, <span id="retailer-name">Sarah</span>!</div>
+                <div class="date" id="current-date">Monday, October 16, 2023</div>
+            </div>
+            
+            <div class="topbar-right">
+                <div class="profile">
+                    <div class="profile-img" id="profile-initials">SR</div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="profile-fullname">Sarah Retailer</div>
+                        <div class="profile-shop" id="shop-info">SuperMart #ID-2345 | Mumbai</div>
+                    </div>
+                </div>
+                <button class="logout-btn" title="Logout">🔒</button>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <section class="dashboard-section">
+                <h1 class="dashboard-title"><i>🧠</i> AI-Powered Smart Orders</h1>
+                
+                <!-- Order Summary Cards -->
+                <div class="stats-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Pending Orders</div>
+                            <div class="card-icon" style="background: rgba(52, 152, 219, 0.1); color: #3498db;">📦</div>
+                        </div>
+                        <div class="card-value" id="pending-orders">12</div>
+                        <div class="card-footer" id="pending-value">₹1,24,560 value</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Avg. Delivery Time</div>
+                            <div class="card-icon" style="background: rgba(46, 204, 113, 0.1); color: #27ae60;">⏱️</div>
+                        </div>
+                        <div class="card-value" id="delivery-time">2.3 days</div>
+                        <div class="card-footer positive">↓ 0.4 days from last month</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Cost Savings</div>
+                            <div class="card-icon" style="background: rgba(155, 89, 182, 0.1); color: #8e44ad;">💰</div>
+                        </div>
+                        <div class="card-value" id="cost-savings">₹24,500</div>
+                        <div class="card-footer positive">↑ 18% with AI suggestions</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Top Supplier</div>
+                            <div class="card-icon" style="background: rgba(241, 196, 15, 0.1); color: #f39c12;">🏆</div>
+                        </div>
+                        <div class="card-value" id="top-supplier">Fresh Foods</div>
+                        <div class="card-footer" id="supplier-score">TruScore: 94</div>
+                    </div>
+                </div>
+                
+                <!-- AI Order Suggestions -->
+                <div class="chart-container" style="margin-bottom: 30px;">
+                    <div class="chart-header">
+                        <div class="chart-title">AI Reorder Suggestions</div>
+                        <div class="table-actions">
+                            <button class="btn btn-outline" id="refresh-suggestions">
+                                <i>🔄</i> Refresh
+                            </button>
+                            <button class="btn btn-primary" id="create-order">
+                                <i>📝</i> Create Order
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Current Stock</th>
+                                    <th>Min Stock</th>
+                                    <th>Sales Velocity</th>
+                                    <th>Suggested Qty</th>
+                                    <th>Urgency</th>
+                                    <th>Top Supplier</th>
+                                    <th>Price/Unit</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="suggestion-table-body">
+                                <!-- AI suggestions will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Supplier Comparison -->
+                <div class="charts-row">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">Supplier Comparison</div>
+                        </div>
+                        <div class="chart-placeholder">
+                            <canvas id="supplierComparisonChart" height="300"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">Delivery Performance</div>
+                        </div>
+                        <div class="chart-placeholder">
+                            <canvas id="deliveryPerformanceChart" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Order History -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">Recent Orders</div>
+                        <div class="table-actions">
+                            <button class="btn btn-outline" id="filter-orders">
+                                <i>🔍</i> Filter
+                            </button>
+                            <button class="btn btn-primary" id="new-order">
+                                <i>➕</i> New Order
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Supplier</th>
+                                    <th>Items</th>
+                                    <th>Value</th>
+                                    <th>Delivery Time</th>
+                                    <th>Status</th>
+                                    <th>Savings</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="order-history-body">
+                                <!-- Order history will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Order Creation Panel -->
+                <div class="card" id="order-creation-panel" style="display: none; margin-top: 30px;">
+                    <div class="card-header">
+                        <div class="card-title">Create New Purchase Order</div>
+                    </div>
+                    <div class="card-body" style="padding: 20px;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Select Supplier</label>
+                                <select class="form-control" id="order-supplier">
+                                    <option value="">Select supplier</option>
+                                    <!-- Suppliers will be populated by JavaScript -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Delivery Date</label>
+                                <input type="date" class="form-control" id="delivery-date">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Add Products</label>
+                            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                                <select class="form-control" id="order-product" style="flex: 3;">
+                                    <option value="">Select product</option>
+                                    <!-- Products will be populated by JavaScript -->
+                                </select>
+                                <input type="number" class="form-control" id="order-qty" placeholder="Qty" style="flex: 1;">
+                                <button class="btn btn-primary" id="add-to-order" style="flex: 1;">Add</button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Qty</th>
+                                        <th>Price/Unit</th>
+                                        <th>Total</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="order-items-body">
+                                    <!-- Order items will be added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="form-row" style="margin-top: 20px;">
+                            <div class="form-group" style="flex: 2;">
+                                <label class="form-label">Notes</label>
+                                <textarea class="form-control" id="order-notes" rows="3"></textarea>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <div style="text-align: right;">
+                                    <div style="font-size: 18px; margin-bottom: 10px;">
+                                        <strong>Total: </strong><span id="order-total">₹0.00</span>
+                                    </div>
+                                    <button class="btn btn-primary" id="submit-order">Submit Order</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Supplier Details Modal -->
+    <div class="form-modal" id="supplier-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Supplier Details</h3>
+                <button class="modal-close" id="close-supplier-modal">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Supplier Name</label>
+                        <input type="text" class="form-control" id="supplier-name" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">TruScore</label>
+                        <input type="text" class="form-control" id="supplier-score" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Contact</label>
+                        <input type="text" class="form-control" id="supplier-contact" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Delivery Time</label>
+                        <input type="text" class="form-control" id="supplier-delivery" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Products Offered</label>
+                    <input type="text" class="form-control" id="supplier-products" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Performance Metrics</label>
+                    <div class="metrics-container" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 10px;">
+                        <div class="metric-card">
+                            <div class="metric-value" id="on-time-rate">95%</div>
+                            <div class="metric-label">On-Time Delivery</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="accuracy-rate">98%</div>
+                            <div class="metric-label">Order Accuracy</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="price-index">1.02</div>
+                            <div class="metric-label">Price Index</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="stock-rate">94%</div>
+                            <div class="metric-label">Stock Availability</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Recent Orders</label>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Order ID</th>
+                                    <th>Amount</th>
+                                    <th>Delivery</th>
+                                    <th>Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody id="supplier-orders-body">
+                                <!-- Supplier orders will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-footer">
+                <button class="btn btn-outline" id="close-supplier">Close</button>
+                <button class="btn btn-primary" id="contact-supplier">
+                    <i>✉️</i> Contact Supplier
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <!-- Same toast as in index.html -->
+    </div>
+    
+    <!-- JavaScript Files -->
+    <script src="assets/js/data-manager.js"></script>
+    <script src="assets/js/ai-logic.js"></script>
+    <script src="assets/js/chart.js"></script>
+    <script src="assets/js/orders.js"></script>
+</body>
+</html>

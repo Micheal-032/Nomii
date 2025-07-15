@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nomii - Supplier Management</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <!-- Dashboard Container -->
+    <div class="dashboard">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i>📊</i>
+                    <span>Nomii Retail</span>
+                </div>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <i>🏠</i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="inventory.html" class="nav-link">
+                        <i>📦</i>
+                        <span>Inventory</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="orders.html" class="nav-link">
+                        <i>🧠</i>
+                        <span>Smart Orders</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <i>🤝</i>
+                        <span>Suppliers</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="profits.html" class="nav-link">
+                        <i>💰</i>
+                        <span>Profit Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="invoices.html" class="nav-link">
+                        <i>📄</i>
+                        <span>GST Invoice</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i>💡</i>
+                        <span>Business Tips</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <i>⚙️</i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+        
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="welcome">Welcome back, <span id="retailer-name">Sarah</span>!</div>
+                <div class="date" id="current-date">Monday, October 16, 2023</div>
+            </div>
+            
+            <div class="topbar-right">
+                <div class="profile">
+                    <div class="profile-img" id="profile-initials">SR</div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="profile-fullname">Sarah Retailer</div>
+                        <div class="profile-shop" id="shop-info">SuperMart #ID-2345 | Mumbai</div>
+                    </div>
+                </div>
+                <button class="logout-btn" title="Logout">🔒</button>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <section class="dashboard-section">
+                <h1 class="dashboard-title"><i>🤝</i> Supplier Management</h1>
+                
+                <!-- Supplier Summary Cards -->
+                <div class="stats-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Total Suppliers</div>
+                            <div class="card-icon" style="background: rgba(52, 152, 219, 0.1); color: #3498db;">🏢</div>
+                        </div>
+                        <div class="card-value" id="total-suppliers">24</div>
+                        <div class="card-footer positive">+3 this month</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Avg. TruScore</div>
+                            <div class="card-icon" style="background: rgba(46, 204, 113, 0.1); color: #27ae60;">⭐</div>
+                        </div>
+                        <div class="card-value" id="avg-truscore">86.4</div>
+                        <div class="card-footer positive">↑ 2.1 from last quarter</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Top Performer</div>
+                            <div class="card-icon" style="background: rgba(155, 89, 182, 0.1); color: #8e44ad;">🏆</div>
+                        </div>
+                        <div class="card-value" id="top-supplier">Fresh Foods</div>
+                        <div class="card-footer" id="top-score">TruScore: 94</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Needs Attention</div>
+                            <div class="card-icon" style="background: rgba(231, 76, 60, 0.1); color: #c0392b;">⚠️</div>
+                        </div>
+                        <div class="card-value" id="problem-supplier">Global Snacks</div>
+                        <div class="card-footer negative">TruScore: 68</div>
+                    </div>
+                </div>
+                
+                <!-- Supplier List -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">All Suppliers</div>
+                        <div class="table-actions">
+                            <button class="btn btn-outline" id="export-suppliers">
+                                <i>📥</i> Export
+                            </button>
+                            <button class="btn btn-primary" id="add-supplier">
+                                <i>➕</i> Add Supplier
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Supplier Name</th>
+                                    <th>Category</th>
+                                    <th>Contact</th>
+                                    <th>Delivery Time</th>
+                                    <th>TruScore</th>
+                                    <th>Price Index</th>
+                                    <th>Last Order</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="suppliers-table-body">
+                                <!-- Suppliers will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Supplier Performance Analytics -->
+                <div class="charts-row">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">TruScore Distribution</div>
+                        </div>
+                        <div class="chart-placeholder">
+                            <canvas id="truscoreChart" height="300"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">Performance Metrics</div>
+                            <div class="chart-actions">
+                                <select class="form-control" id="metric-select" style="width: 150px;">
+                                    <option value="delivery">Delivery Time</option>
+                                    <option value="pricing">Pricing</option>
+                                    <option value="accuracy">Order Accuracy</option>
+                                    <option value="availability">Stock Availability</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-placeholder">
+                            <canvas id="performanceChart" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Supplier Reviews -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">Supplier Reviews & Notes</div>
+                        <div class="table-actions">
+                            <button class="btn btn-outline" id="add-review">
+                                <i>✍️</i> Add Review
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Supplier</th>
+                                    <th>Date</th>
+                                    <th>Rating</th>
+                                    <th>Review</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reviews-table-body">
+                                <!-- Reviews will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Add Supplier Modal -->
+    <div class="form-modal" id="add-supplier-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Supplier</h3>
+                <button class="modal-close" id="close-add-supplier">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Supplier Name</label>
+                        <input type="text" class="form-control" id="supplier-name" placeholder="Enter supplier name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Person</label>
+                        <input type="text" class="form-control" id="contact-person" placeholder="Enter contact person">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="supplier-email" placeholder="Enter email">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="supplier-phone" placeholder="Enter phone number">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-control" id="supplier-address" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Product Categories</label>
+                        <select class="form-control" id="supplier-categories" multiple>
+                            <option value="Dairy">Dairy</option>
+                            <option value="Bakery">Bakery</option>
+                            <option value="Beverages">Beverages</option>
+                            <option value="Snacks">Snacks</option>
+                            <option value="Fruits">Fruits</option>
+                            <option value="Vegetables">Vegetables</option>
+                            <option value="Personal Care">Personal Care</option>
+                            <option value="Household">Household</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Default Delivery Time (days)</label>
+                        <input type="number" class="form-control" id="delivery-time" min="1" value="3">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Payment Terms</label>
+                        <input type="text" class="form-control" id="payment-terms" placeholder="e.g., Net 30">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Minimum Order Quantity</label>
+                        <input type="number" class="form-control" id="min-order" min="1" value="10">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-footer">
+                <button class="btn btn-outline" id="cancel-add-supplier">Cancel</button>
+                <button class="btn btn-primary" id="save-supplier">Save Supplier</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Supplier Detail Modal -->
+    <div class="form-modal" id="supplier-detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Supplier Details</h3>
+                <button class="modal-close" id="close-supplier-detail">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Supplier Name</label>
+                        <input type="text" class="form-control" id="detail-name" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">TruScore</label>
+                        <input type="text" class="form-control" id="detail-truscore" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Contact</label>
+                        <input type="text" class="form-control" id="detail-contact" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Delivery Time</label>
+                        <input type="text" class="form-control" id="detail-delivery" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="text" class="form-control" id="detail-email" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="text" class="form-control" id="detail-phone" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <textarea class="form-control" id="detail-address" rows="2" readonly></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Performance Metrics</label>
+                    <div class="metrics-container">
+                        <div class="metric-card">
+                            <div class="metric-value" id="on-time-rate">95%</div>
+                            <div class="metric-label">On-Time Delivery</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="accuracy-rate">98%</div>
+                            <div class="metric-label">Order Accuracy</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="price-index">1.02</div>
+                            <div class="metric-label">Price Index</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="stock-rate">94%</div>
+                            <div class="metric-label">Stock Availability</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Recent Orders</label>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Order ID</th>
+                                    <th>Amount</th>
+                                    <th>Items</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="supplier-orders-body">
+                                <!-- Orders will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-footer">
+                <button class="btn btn-outline" id="close-detail">Close</button>
+                <button class="btn btn-primary" id="contact-supplier">
+                    <i>✉️</i> Contact Supplier
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <!-- Same toast as in index.html -->
+    </div>
+    
+    <!-- JavaScript Files -->
+    <script src="assets/js/data-manager.js"></script>
+    <script src="assets/js/ai-logic.js"></script>
+    <script src="assets/js/chart.js"></script>
+    <script src="assets/js/suppliers.js"></script>
+</body>
+</html>
