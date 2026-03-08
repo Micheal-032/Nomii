@@ -108,6 +108,7 @@ Follow these steps to run Nomii locally.
 ```
 git clone https://github.com/your-username/nomii.git
 cd nomii
+cd nomii_flask_app
 ```
 
 ---
