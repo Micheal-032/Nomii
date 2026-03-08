@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nomii System Architecture</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0d0f1a;
+            --card-bg: rgba(22, 25, 41, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #e8eaf6;
+            --muted: #8892b0;
+            --accent: #4361ee;
+            --accent2: #4cc9f0;
+            --success: #2de084;
+            --warning: #f8961e;
+            --danger: #f72585;
+            --font-main: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(67, 97, 238, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(76, 201, 240, 0.08), transparent 25%);
+            color: var(--text);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 60px;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(45, 224, 132, 0.15);
+            color: var(--success);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: 1px solid rgba(45, 224, 132, 0.3);
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(45, 224, 132, 0.2);
+        }
+
+        h1 {
+            font-size: 46px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, var(--muted));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 16px;
+        }
+
+        p.subtitle {
+            font-size: 18px;
+            color: var(--muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        .back-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 8px 24px rgba(67, 97, 238, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* ─── Architecture Map ──────────────────────────────────────────────── */
+        .diagram {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 50px;
+            animation: fadeInUp 1s ease-out forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .layer {
+            position: relative;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .layer:hover {
+            border-color: rgba(67, 97, 238, 0.4);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(67, 97, 238, 0.1);
+        }
+
+        .layer-title {
+            position: absolute;
+            top: -16px;
+            left: 40px;
+            background: var(--bg);
+            padding: 0 16px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent2);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .node {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s;
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .node::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .node:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .node:hover::before {
+            opacity: 1;
+        }
+
+        .node-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(67, 97, 238, 0.15);
+            color: var(--accent2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 16px;
+            box-shadow: inset 0 0 0 1px rgba(67, 97, 238, 0.3);
+        }
+
+        .node-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .node-desc {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .node-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-family: var(--font-mono);
+            color: var(--text);
+            opacity: 0.8;
+        }
+
+        /* Connecting Lines / Animations */
+        .flow-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+            position: relative;
+        }
+
+        .flow-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+            background-size: 200% 200%;
+            animation: pulseStream 2s infinite linear;
+        }
+
+        .flow-arrow {
+            color: var(--accent);
+            font-size: 24px;
+            z-index: 10;
+            background: var(--bg);
+            padding: 10px;
+            animation: float 2s infinite ease-in-out;
+            box-shadow: 0 0 20px var(--bg);
+        }
+
+        @keyframes pulseStream {
+            0% {
+                background-position: center top;
+            }
+
+            100% {
+                background-position: center bottom;
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(-4px);
+            }
+
+            50% {
+                transform: translateY(4px);
+            }
+        }
+
+        /* Specialized Nodes */
+        .node.ai-node .node-icon {
+            background: rgba(45, 224, 132, 0.15);
+            color: var(--success);
+            box-shadow: inset 0 0 0 1px rgba(45, 224, 132, 0.3);
+        }
+
+        .node.ai-node::before {
+            background: linear-gradient(90deg, var(--success), #a8e6cf);
+        }
+
+        .node.data-node .node-icon {
+            background: rgba(248, 150, 30, 0.15);
+            color: var(--warning);
+            box-shadow: inset 0 0 0 1px rgba(248, 150, 30, 0.3);
+        }
+
+        .node.data-node::before {
+            background: linear-gradient(90deg, var(--warning), #ffd166);
+        }
+
+        .node.api-node .node-icon {
+            background: rgba(247, 37, 133, 0.15);
+            color: var(--danger);
+            box-shadow: inset 0 0 0 1px rgba(247, 37, 133, 0.3);
+        }
+
+        .node.api-node::before {
+            background: linear-gradient(90deg, var(--danger), #ffb5a7);
+        }
+
+        @media (max-width: 768px) {
+            .back-btn {
+                top: 20px;
+                left: 20px;
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .layer {
+                padding: 30px 20px;
+            }
+
+            .layer-title {
+                left: 20px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i> Home</a>
+
+    <div class="container">
+        <header>
+            <div class="badge"><i class="fas fa-bolt"></i> Live System</div>
+            <h1>Nomii Core Architecture</h1>
+            <p class="subtitle">Complete AI-driven ecosystem mapping for rural commerce, logistics, and data pipelines.
+            </p>
+        </header>
+
+        <div class="diagram">
+
+            <!-- Layer 1: Access -->
+            <div class="layer">
+                <div class="layer-title"><i class="fas fa-mobile-alt"></i> 1. Frontend & Access Layer</div>
+                <div class="grid">
+                    <div class="node">
+                        <div class="node-icon"><i class="fas fa-users"></i></div>
+                        <div class="node-title">5-Role User Apps</div>
+                        <div class="node-desc">Unified authentication for Farmers, Artisans, Suppliers, Retailers, and
+                            Delivery Partners.</div>
+                        <div class="node-tags">
+                            <span class="tag">Next.js / HTML</span>
+                            <span class="tag">Flutter</span>
+                            <span class="tag">Role-Based Auth</span>
+                        </div>
+                    </div>
+                    <div class="node">
+                        <div class="node-icon"><i class="fas fa-chart-pie"></i></div>
+                        <div class="node-title">Smart Dashboard</div>
+                        <div class="node-desc">Dynamic UI injecting specialized analytics, charts, and modules based on
+                            the active user profile.</div>
+                        <div class="node-tags">
+                            <span class="tag">Chart.js</span>
+                            <span class="tag">Glassmorphism UI</span>
+                            <span class="tag">JS Engine</span>
+                        </div>
+                    </div>
+                    <div class="node ai-node">
+                        <div class="node-icon"><i class="fas fa-robot"></i></div>
+                        <div class="node-title">Ecosystem Chatbot</div>
+                        <div class="node-desc">Embedded chat widget connecting users to the 5-Layer AI context engine
+                            via natural language.</div>
+                        <div class="node-tags">
+                            <span class="tag">Multilingual UI</span>
+                            <span class="tag">Context Memory</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-line"><i class="fas fa-chevron-down flow-arrow"></i></div>
+
+            <!-- Layer 2: API Gateway & Logic -->
+            <div class="layer" style="border-color: rgba(67, 97, 238, 0.3);">
+                <div class="layer-title" style="color: var(--accent);"><i class="fas fa-server"></i> 2. Backend &
+                    Business Logic</div>
+                <div class="grid">
+                    <div class="node">
+                        <div class="node-icon"><i class="fas fa-network-wired"></i></div>
+                        <div class="node-title">Flask API Gateway</div>
+                        <div class="node-desc">Python-based microservice entrypoint handling rate limiting, JWT
+                            validation, and routing.</div>
+                        <div class="node-tags">
+                            <span class="tag">Python 3</span>
+                            <span class="tag">Flask</span>
+                            <span class="tag">REST</span>
+                        </div>
+                    </div>
+                    <div class="node">
+                        <div class="node-icon"><i class="fas fa-shopping-bag"></i></div>
+                        <div class="node-title">Marketplace Escrow</div>
+                        <div class="node-desc">Secure order processing locking funds until Delivery confirm with 6-digit
+                            OTP verification.</div>
+                        <div class="node-tags">
+                            <span class="tag">Transaction State</span>
+                            <span class="tag">OTP Auth</span>
+                        </div>
+                    </div>
+                    <div class="node data-node">
+                        <div class="node-icon"><i class="fas fa-database"></i></div>
+                        <div class="node-title">Database Storage</div>
+                        <div class="node-desc">Relational storage for profiles, real-time inventory alerts, order
+                            status, and behavioral data.</div>
+                        <div class="node-tags">
+                            <span class="tag">SQLite3</span>
+                            <span class="tag">Secure Hashes</span>
+                            <span class="tag">Excel Export</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-line"><i class="fas fa-chevron-down flow-arrow"></i></div>
+
+            <!-- Layer 3: AI Intelligence -->
+            <div class="layer" style="border-color: rgba(45, 224, 132, 0.3);">
+                <div class="layer-title" style="color: var(--success);"><i class="fas fa-brain"></i> 3. Internal AI Core
+                </div>
+                <div class="grid">
+                    <div class="node ai-node">
+                        <div class="node-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="node-title">LSTM Demand Oracle</div>
+                        <div class="node-desc">Time-series forecasting predicting supply shortages and price hikes for
+                            Top 5 commodities.</div>
+                        <div class="node-tags">
+                            <span class="tag">ARIMA/LSTM</span>
+                            <span class="tag">Trend Analysis</span>
+                        </div>
+                    </div>
+                    <div class="node ai-node">
+                        <div class="node-icon"><i class="fas fa-comments"></i></div>
+                        <div class="node-title">5-Layer NLP Engine</div>
+                        <div class="node-desc">Processes chatbot intents, extracts NER (Crop/Location), maps API
+                            actions, and generates dynamic responses.</div>
+                        <div class="node-tags">
+                            <span class="tag">Regex Intent Matching</span>
+                            <span class="tag">Session Context</span>
+                        </div>
+                    </div>
+                    <div class="node ai-node">
+                        <div class="node-icon"><i class="fas fa-shield-alt"></i></div>
+                        <div class="node-title">Fraud Risk Engine</div>
+                        <div class="node-desc">Behavioral ML evaluating order frequency, cancellations, and device IP to
+                            assign trust scores 1-100.</div>
+                        <div class="node-tags">
+                            <span class="tag">Outlier Detection</span>
+                            <span class="tag">Isolation Forest</span>
+                        </div>
+                    </div>
+                    <div class="node ai-node">
+                        <div class="node-icon"><i class="fas fa-route"></i></div>
+                        <div class="node-title">K-Means Logistics</div>
+                        <div class="node-desc">Geospatial clustering algorithm grouping drop-off points to optimize
+                            delivery agent routes and reduce fuel sink.</div>
+                        <div class="node-tags">
+                            <span class="tag">Clustering</span>
+                            <span class="tag">Shortest Path Algo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-line"><i class="fas fa-chevron-down flow-arrow"></i></div>
+
+            <!-- Layer 4: Integrations -->
+            <div class="layer" style="border-color: rgba(247, 37, 133, 0.3);">
+                <div class="layer-title" style="color: var(--danger);"><i class="fas fa-plug"></i> 4. External Data
+                    Connectors</div>
+                <div class="grid">
+                    <div class="node api-node">
+                        <div class="node-icon"><i class="fas fa-cloud-sun-rain"></i></div>
+                        <div class="node-title">OpenWeather API</div>
+                        <div class="node-desc">Fetches live meteorological data merged with logic to advise farmers on
+                            crop care planning.</div>
+                        <div class="node-tags">
+                            <span class="tag">JSON / REST</span>
+                            <span class="tag">Caching</span>
+                        </div>
+                    </div>
+                    <div class="node api-node">
+                        <div class="node-icon"><i class="fas fa-seedling"></i></div>
+                        <div class="node-title">Agmarknet Sim</div>
+                        <div class="node-desc">Live simulation of Indian agriculture wholesale prices feeding the
+                            dynamic price suggestion models.</div>
+                        <div class="node-tags">
+                            <span class="tag">Market Oracle</span>
+                            <span class="tag">Real-Time Data</span>
+                        </div>
+                    </div>
+                    <div class="node api-node">
+                        <div class="node-icon"><i class="fas fa-language"></i></div>
+                        <div class="node-title">LibreTranslate Edge</div>
+                        <div class="node-desc">Edge-computed translation dictionary converting English system
+                            notifications into local dialects globally.</div>
+                        <div class="node-tags">
+                            <span class="tag">Hindi/Tamil</span>
+                            <span class="tag">Localization</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>

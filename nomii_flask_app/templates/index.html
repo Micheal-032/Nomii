@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Nomii Retail – Multi-role registration portal for Retailers, Suppliers, Delivery Partners, Farmers and Artisans">
+    <title>Nomii – Signup &amp; Login</title>
+
+    <!-- FIX #21: Google Fonts Poppins – was never imported before -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- FIX #18/#30: Link external style.css – was never linked before -->
+    <link rel="stylesheet" href="/static/style.css">
+
+    <!-- Small page-level overrides that depend on role CSS variables set by JS -->
+    <style>
+        .login-error {
+            color: var(--danger);
+            font-size: 13px;
+            text-align: center;
+            margin: 8px 0 0;
+            padding: 10px 14px;
+            background: rgba(247, 37, 133, 0.08);
+            border-radius: 8px;
+            display: block;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 4px;
+            padding-left: 4px;
+        }
+
+        /* FIX #23: toggle-password is now a <button> — keep it sized correctly */
+        .toggle-password {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #95a5a6;
+            background: none;
+            border: none;
+            width: auto;
+            margin: 0;
+            padding: 4px;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .toggle-password:hover {
+            color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- FIX #17: Added 8 bubbles to match CSS nth-child(1-8) rules (was only 5) -->
+    <div class="bg-bubbles" aria-hidden="true">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <div class="wrapper">
+        <!-- ===== ROLE SELECTION ===== -->
+        <div class="container" id="roleSelection" role="main">
+            <div class="logo">
+                <svg viewBox="0 0 100 100" class="logo-svg" aria-hidden="true">
+                    <path d="M50 10 L90 50 L50 90 L10 50 Z" class="logo-path"></path>
+                </svg>
+                <h1>Nomii Retail</h1>
+            </div>
+            <p style="color:#666;margin-bottom:20px;font-size:14px;">Select your role to get started</p>
+            <div class="role-buttons" role="group" aria-label="Role selection">
+                <button onclick="showSignupSection('R')" class="role-btn retail" aria-label="Continue as Retailer">
+                    <i class="fas fa-store" aria-hidden="true"></i> Continue as Retailer
+                </button>
+                <button onclick="showSignupSection('S')" class="role-btn supplier" aria-label="Continue as Supplier">
+                    <i class="fas fa-boxes" aria-hidden="true"></i> Continue as Supplier
+                </button>
+                <button onclick="showSignupSection('D')" class="role-btn delivery"
+                    aria-label="Continue as Delivery Partner">
+                    <i class="fas fa-truck" aria-hidden="true"></i> Continue as Delivery Partner
+                </button>
+                <button onclick="showSignupSection('F')" class="role-btn farmer" aria-label="Continue as Farmer">
+                    <i class="fas fa-tractor" aria-hidden="true"></i> Continue as Farmer
+                </button>
+                <button onclick="showSignupSection('A')" class="role-btn artisan" aria-label="Continue as Artisan">
+                    <i class="fas fa-paint-brush" aria-hidden="true"></i> Continue as Artisan
+                </button>
+            </div>
+            <p class="switch-mode">Already registered? <a href="#" onclick="showLoginSection(); return false;">Login
+                    here</a></p>
+            <div
+                style="text-align:center; padding-top:20px; margin-top:10px; border-top:1px solid rgba(255,255,255,0.1);">
+                <a href="/architecture"
+                    style="color:var(--accent); font-size:14px; font-weight:600; text-decoration:none;">
+                    <i class="fas fa-project-diagram"></i> View System Architecture Map
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== SIGNUP SECTION ===== -->
+        <div class="container" id="signupSection" style="display:none" role="main">
+            <button class="back-btn" onclick="showRoleSelection()" aria-label="Go back to role selection">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            </button>
+            <h2 id="signupTitle">Signup</h2>
+            <form id="signupForm" onsubmit="processSignup(); return false;" novalidate></form>
+            <button type="button" onclick="processSignup()" class="submit-btn">
+                <span class="btn-text">Create Account</span>
+                <span class="btn-loading" aria-hidden="true"><i class="fas fa-spinner fa-spin"></i></span>
+            </button>
+            <p class="switch-mode">Already have an account? <a href="#"
+                    onclick="showLoginSection(); return false;">Login</a></p>
+        </div>
+
+        <!-- ===== LOGIN SECTION ===== -->
+        <div class="container" id="loginSection" style="display:none" role="main">
+            <button class="back-btn" onclick="showRoleSelection()" aria-label="Go back to role selection">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            </button>
+            <h2>Login</h2>
+            <form id="loginForm" onsubmit="processLogin(); return false;" novalidate>
+                <div class="form-group">
+                    <label for="loginId">Login ID</label>
+                    <input type="text" id="loginId" placeholder="Your NOMII-R-… ID" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <div class="password-container">
+                        <input type="password" id="loginPassword" placeholder="Your password" required
+                            autocomplete="current-password">
+                        <!-- FIX #11/#12: explicit IDs used for toggle — no broken CSS sibling selector -->
+                        <button type="button" class="toggle-password" id="toggleLoginPwd"
+                            aria-label="Toggle password visibility"
+                            onclick="togglePasswordVisibility('loginPassword','toggleLoginPwd')">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <button type="button" onclick="processLogin()" class="submit-btn">
+                <span class="btn-text">Login</span>
+                <span class="btn-loading" aria-hidden="true"><i class="fas fa-spinner fa-spin"></i></span>
+            </button>
+            <!-- FIX #25: Show role selection (not currentRole which may be empty) -->
+            <p class="switch-mode">New user? <a href="#" onclick="showRoleSelection(); return false;">Sign up</a></p>
+        </div>
+
+        <!-- ===== SUCCESS POPUP ===== -->
+        <div id="loginIdPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+            <div class="popup-content">
+                <div class="popup-header">
+                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" aria-hidden="true">
+                        <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                    <h3 id="popupTitle">Account Created!</h3>
+                </div>
+                <div class="popup-body">
+                    <p>Your Login ID is:</p>
+                    <div class="login-id-display">
+                        <strong id="generatedLoginId"></strong>
+                        <button id="copyLoginIdBtn" onclick="copyLoginId()" class="copy-btn" aria-label="Copy Login ID">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="password-tip">
+                        <i class="fas fa-info-circle" aria-hidden="true"></i>
+                        <span>Save your Login ID and password in a safe place.</span>
+                    </div>
+                </div>
+                <div class="popup-footer" style="display:flex;gap:10px;padding:0 25px 25px;">
+                    <!-- FIX #9/#28: Download is an explicit button, not auto-navigation -->
+                    <button onclick="downloadCard()" style="flex:1;background:var(--success,#2ecc71)">
+                        <span class="btn-text"><i class="fas fa-download"></i> Download Card</span>
+                    </button>
+                    <button id="goToLoginBtn" onclick="goToLogin()" style="flex:1">
+                        <span class="btn-text">Go to Login</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIX #18/#29: Link external main.js — was never linked before (duplicate inline code removed) -->
+    <script src="/static/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,2628 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Nomii – AI-Powered Rural Commerce Dashboard">
+    <title>Nomii – Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* ─── Design Tokens ─────────────────────────────────────────────────── */
+        :root {
+            --bg-dark: #0d0f1a;
+            --bg-card: #161929;
+            --bg-sidebar: #131626;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.08);
+            --accent: #4361ee;
+            --accent2: #4cc9f0;
+            --success: #2de084;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --text: #e8eaf6;
+            --muted: #8892b0;
+            --role-R: #4361ee;
+            --role-S: #7209b7;
+            --role-D: #f72585;
+            --role-F: #2de084;
+            --role-A: #f8961e;
+            --role-color: var(--accent);
+            --sidebar-w: 250px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ─── Reset ─────────────────────────────────────────────────────────── */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* ─── Sidebar ────────────────────────────────────────────────────────── */
+        .sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            width: var(--sidebar-w);
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-brand {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--role-color), var(--accent2));
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .brand-name {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--role-color), var(--accent2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .brand-sub {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* User card in sidebar */
+        .sidebar-user {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--role-color), var(--accent2));
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .user-login-id {
+            font-size: 11px;
+            color: var(--muted);
+            word-break: break-all;
+            font-family: monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.07);
+            color: var(--role-color);
+            border: 1px solid var(--role-color);
+            margin-top: 4px;
+        }
+
+        /* Nav */
+        .sidebar-nav {
+            flex: 1;
+            padding: 12px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-section-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            color: var(--muted);
+            text-transform: uppercase;
+            padding: 8px 8px 4px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .nav-item:hover {
+            background: var(--glass);
+            color: var(--text);
+        }
+
+        .nav-item.active {
+            background: rgba(67, 97, 238, 0.15);
+            color: var(--role-color);
+        }
+
+        .nav-item.active i {
+            color: var(--role-color);
+        }
+
+        .nav-item i {
+            width: 18px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 7px;
+            border-radius: 20px;
+        }
+
+        .sidebar-footer {
+            padding: 16px 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .logout-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border: 1px solid rgba(247, 37, 133, 0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            background: rgba(247, 37, 133, 0.07);
+            color: var(--danger);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        /* Hamburger */
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 200;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            color: var(--text);
+            font-size: 18px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 90;
+        }
+
+        /* ─── Main Content ───────────────────────────────────────────────────── */
+        .main {
+            margin-left: var(--sidebar-w);
+            min-height: 100vh;
+            transition: margin 0.3s;
+        }
+
+        .topbar {
+            padding: 20px 28px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-card);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .topbar-sub {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .topbar-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .content {
+            padding: 28px;
+        }
+
+        /* ─── Tabs ────────────────────────────────────────────────────────────── */
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* ─── Stats Grid ─────────────────────────────────────────────────────── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--role-color), var(--accent2));
+        }
+
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+            margin-bottom: 14px;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .stat-trend {
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .trend-up {
+            color: var(--success);
+        }
+
+        .trend-down {
+            color: var(--danger);
+        }
+
+        /* ─── Cards ──────────────────────────────────────────────────────────── */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title i {
+            color: var(--role-color);
+        }
+
+        .card-body {
+            padding: 22px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* ─── Buttons ────────────────────────────────────────────────────────── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--role-color), var(--accent2));
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            background: var(--glass);
+            border-color: var(--role-color);
+        }
+
+        .btn-danger {
+            background: rgba(247, 37, 133, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(247, 37, 133, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .btn-success {
+            background: rgba(45, 224, 132, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(45, 224, 132, 0.3);
+        }
+
+        .btn-success:hover {
+            background: var(--success);
+            color: #000;
+        }
+
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Loading spinner inside btn */
+        .btn .spin {
+            display: none;
+        }
+
+        .btn.loading .btn-text {
+            visibility: hidden;
+        }
+
+        .btn.loading .spin {
+            display: block;
+            position: absolute;
+        }
+
+        /* ─── Forms ──────────────────────────────────────────────────────────── */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .form-row.cols-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .form-row.cols-1 {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 11px 14px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--role-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .form-select option {
+            background: var(--bg-card);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* ─── Table ──────────────────────────────────────────────────────────── */
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            text-align: left;
+            padding: 10px 14px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            color: var(--muted);
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* ─── Badges ─────────────────────────────────────────────────────────── */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge-held {
+            background: rgba(248, 150, 30, 0.2);
+            color: var(--warning);
+        }
+
+        .badge-released {
+            background: rgba(45, 224, 132, 0.2);
+            color: var(--success);
+        }
+
+        .badge-disputed {
+            background: rgba(247, 37, 133, 0.2);
+            color: var(--danger);
+        }
+
+        .badge-placed {
+            background: rgba(67, 97, 238, 0.2);
+            color: var(--accent);
+        }
+
+        .badge-delivered {
+            background: rgba(45, 224, 132, 0.2);
+            color: var(--success);
+        }
+
+        .badge-active {
+            background: rgba(45, 224, 132, 0.15);
+            color: var(--success);
+        }
+
+        .badge-deleted {
+            background: rgba(139, 139, 139, 0.2);
+            color: var(--muted);
+        }
+
+        /* ─── Alert Banner ───────────────────────────────────────────────────── */
+        .alert-banner {
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .alert-warning {
+            background: rgba(248, 150, 30, 0.12);
+            border: 1px solid rgba(248, 150, 30, 0.3);
+            color: var(--warning);
+        }
+
+        .alert-success {
+            background: rgba(45, 224, 132, 0.1);
+            border: 1px solid rgba(45, 224, 132, 0.3);
+            color: var(--success);
+        }
+
+        .alert-danger {
+            background: rgba(247, 37, 133, 0.1);
+            border: 1px solid rgba(247, 37, 133, 0.3);
+            color: var(--danger);
+        }
+
+        /* ─── Charts ─────────────────────────────────────────────────────────── */
+        .chart-container {
+            position: relative;
+            height: 240px;
+        }
+
+        /* ─── Price Predictor ────────────────────────────────────────────────── */
+        .price-result {
+            background: rgba(67, 97, 238, 0.1);
+            border: 1px solid rgba(67, 97, 238, 0.3);
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .price-result.show {
+            display: block;
+        }
+
+        .price-main {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--success);
+            margin-bottom: 8px;
+        }
+
+        .price-band {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        .price-breakdown {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .pbr {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 8px;
+        }
+
+        .pbr-key {
+            color: var(--muted);
+        }
+
+        .pbr-val {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* ─── Fraud Score Gauge ──────────────────────────────────────────────── */
+        .trust-ring {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(var(--ring-color) var(--ring-pct), rgba(255, 255, 255, 0.07) 0);
+            display: grid;
+            place-items: center;
+            margin: 0 auto 16px;
+            position: relative;
+        }
+
+        .trust-ring-inner {
+            width: 84px;
+            height: 84px;
+            background: var(--bg-card);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .trust-score-num {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .trust-score-label {
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        /* ─── Logistics ─────────────────────────────────────────────────────── */
+        .cluster-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .cluster-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .cluster-name {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .cluster-stat {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* ─── Product Grid ───────────────────────────────────────────────────── */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            border-color: var(--role-color);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .product-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(67, 97, 238, 0.15);
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .product-name {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .product-meta {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--success);
+        }
+
+        .product-qty {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* ─── Order Modal ────────────────────────────────────────────────────── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            max-width: 440px;
+            width: 90%;
+            animation: fadeUp 0.3s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        /* ─── Toast ──────────────────────────────────────────────────────────── */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--success);
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 260px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast.warn {
+            border-left-color: var(--warning);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* ─── Empty State ────────────────────────────────────────────────────── */
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--muted);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+            display: block;
+        }
+
+        .empty-state p {
+            font-size: 15px;
+        }
+
+        /* ─── Responsive ─────────────────────────────────────────────────────── */
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.open {
+                display: block;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .hamburger {
+                display: grid;
+            }
+
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .price-breakdown {
+                grid-template-columns: 1fr;
+            }
+
+            .cluster-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .content {
+                padding: 16px;
+            }
+
+            .topbar {
+                padding: 14px 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* ─── Scrollbar ──────────────────────────────────────────────────────── */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Loading skeleton */
+        .skeleton {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.4
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- Hamburger -->
+    <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Open menu">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- ─── Sidebar ─────────────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon" id="brandIcon">N</div>
+            <div>
+                <div class="brand-name">Nomii</div>
+                <div class="brand-sub">Rural Commerce AI</div>
+            </div>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar" id="userAvatar">?</div>
+            <div class="user-login-id" id="sidebarLoginId">—</div>
+            <div class="user-role-badge" id="sidebarRoleBadge">Role</div>
+        </div>
+
+        <nav class="sidebar-nav" id="sidebarNav">
+            <!-- Populated by JS based on role -->
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="doLogout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- ─── Main Content ─────────────────────────────────────────────── -->
+    <div class="main">
+        <div class="topbar">
+            <div>
+                <div class="topbar-title" id="topbarTitle">Dashboard</div>
+                <div class="topbar-sub" id="topbarSub">Loading...</div>
+            </div>
+            <div class="topbar-actions">
+                <div class="icon-btn" title="Download Excel" onclick="downloadExcelCard()">
+                    <i class="fas fa-file-excel"></i>
+                </div>
+                <div class="icon-btn" title="Refresh" onclick="loadDashboardData()" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="content" id="mainContent">
+
+            <!-- ─── OVERVIEW TAB ─── -->
+            <div class="tab-panel active" id="tab-overview">
+                <!-- Inventory alert -->
+                <div id="inventoryAlertContainer"></div>
+
+                <!-- Stats -->
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card skeleton" style="height:130px"></div>
+                    <div class="stat-card skeleton" style="height:130px"></div>
+                    <div class="stat-card skeleton" style="height:130px"></div>
+                    <div class="stat-card skeleton" style="height:130px"></div>
+                </div>
+
+                <!-- Charts row -->
+                <div class="grid-2" style="margin-bottom:20px">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-chart-bar"></i> Weekly Earnings (₹)</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="earningsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-chart-line"></i> Demand Forecast</div>
+                            <span style="font-size:11px;color:var(--muted)">Top 5 Products – 7 Days</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="demandChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Details Container -->
+                {% if user.role in ['F', 'A', 'S'] %}
+                <div class="card" style="margin-bottom:20px;">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-id-card"></i> My Profile Details</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="grid-3" style="font-size:13px;">
+                            {% if user.role == 'F' %}
+                            <div style="background:var(--glass);padding:12px;border-radius:8px;">
+                                <div
+                                    style="color:var(--muted);font-size:11px;text-transform:uppercase;margin-bottom:4px">
+                                    Produce</div>
+                                <div style="font-weight:600">{{ user.produce }}</div>
+                            </div>
+                            <div style="background:var(--glass);padding:12px;border-radius:8px;">
+                                <div
+                                    style="color:var(--muted);font-size:11px;text-transform:uppercase;margin-bottom:4px">
+                                    Land Size</div>
+                                <div style="font-weight:600">{{ user.landSize }}</div>
+                            </div>
+                            <div style="background:var(--glass);padding:12px;border-radius:8px;">
+                                <div
+                                    style="color:var(--muted);font-size:11px;text-transform:uppercase;margin-bottom:4px">
+                                    Experience</div>
+                                <div style="font-weight:600">{{ user.experience }} Years</div>
+                            </div>
+                            <div style="background:var(--glass);padding:12px;border-radius:8px;">
+                                <div
+                                    style="color:var(--muted);font-size:11px;text-transform:uppercase;margin-bottom:4px">
+                                    Soil Type</div>
+                                <div style="font-weight:600">{{ user.soilType or 'N/A' }}</div>
+                            </div>
+                            <div style="background:var(--glass);padding:12px;border-radius:8px;">
+                                <div
+                                    style="color:var(--muted);font-size:11px;text-transform:uppercase;margin-bottom:4px">
+                                    Water Source</div>
+                                <div style="font-weight:600">{{ user.waterSource or 'N/A' }}</div>
+                            </div>
+                            <div style="background:var(--glass);padding:12px;border-radius:8px;">
+                                <div
+                                    style="color:var(--muted);font-size:11px;text-transform:uppercase;margin-bottom:4px">
+                                    Seasonal Crops</div>
+                                <div style="font-weight:600">{{ user.seasonalCrops or 'N/A' }}</div>
+                            </div>
+                            {% elif user.role == 'A' %}
+                            <div style="background:var(--glass);padding:12px;border-radius:8px;">
+                                <div
+                                    style="color:var(--muted);font-size:11px;text-transform:uppercase;margin-bottom:4px">
+                                    Craft Type</div>
+                                <div style="font-weight:600">{{ user.craftType }}</div>
+                            </div>
+                            <div style="background:var(--glass);padding:12px;border-radius:8px;">
+                                <div
+                                    style="color:var(--muted);font-size:11px;text-transform:uppercase;margin-bottom:4px">
+                                    Region</div>
+                                <div style="font-weight:600">{{ user.region }}</div>
+                            </div>
+                            <div style="background:var(--glass);padding:12px;border-radius:8px;">
+                                <div
+                                    style="color:var(--muted);font-size:11px;text-transform:uppercase;margin-bottom:4px">
+                                    Production Capacity</div>
+                                <div style="font-weight:600">{{ user.productionCapacity or 'N/A' }}</div>
+                            </div>
+                            {% elif user.role == 'S' %}
+                            <div style="background:var(--glass);padding:12px;border-radius:8px;">
+                                <div
+                                    style="color:var(--muted);font-size:11px;text-transform:uppercase;margin-bottom:4px">
+                                    Warehouse Location</div>
+                                <div style="font-weight:600">{{ user.warehouseLocation or 'N/A' }}</div>
+                            </div>
+                            <div style="background:var(--glass);padding:12px;border-radius:8px;">
+                                <div
+                                    style="color:var(--muted);font-size:11px;text-transform:uppercase;margin-bottom:4px">
+                                    Product Categories</div>
+                                <div style="font-weight:600">{{ user.productCategories or 'N/A' }}</div>
+                            </div>
+                            <div style="background:var(--glass);padding:12px;border-radius:8px;">
+                                <div
+                                    style="color:var(--muted);font-size:11px;text-transform:uppercase;margin-bottom:4px">
+                                    Stock Volume</div>
+                                <div style="font-weight:600">{{ user.stockVolume or '0' }} Tons</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Trust + Unit Economics -->
+                <div class="grid-2">
+                    <!-- Fraud / Trust Score -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-shield-alt"></i> Trust & Fraud Score</div>
+                        </div>
+                        <div class="card-body" style="text-align:center">
+                            <div class="trust-ring" id="trustRing" style="--ring-color:#2de084;--ring-pct:90deg">
+                                <div class="trust-ring-inner">
+                                    <div class="trust-score-num" id="trustScoreNum">–</div>
+                                    <div class="trust-score-label">/ 100</div>
+                                </div>
+                            </div>
+                            <div style="font-size:14px;font-weight:700;margin-bottom:8px" id="trustLevel">Loading…</div>
+                            <div id="trustSignals" style="font-size:12px;color:var(--muted)"></div>
+                        </div>
+                    </div>
+
+                    <!-- Unit Economics -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-rupee-sign"></i> Platform Economics</div>
+                        </div>
+                        <div class="card-body">
+                            <div id="unitEconomicsDisplay">
+                                <table style="width:100%">
+                                    <tbody id="econTable"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /overview -->
+
+            <!-- ─── MARKETPLACE TAB ─── -->
+            <div class="tab-panel" id="tab-marketplace">
+                <!-- Search bar -->
+                <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+                    <input class="form-input" id="mktSearch" placeholder="🔍  Search products…"
+                        style="flex:1;min-width:200px" oninput="filterProducts()">
+                    <select class="form-select" id="mktCategory" onchange="filterProducts()" style="min-width:160px">
+                        <option value="">All Categories</option>
+                        <option>Vegetables</option>
+                        <option>Fruits</option>
+                        <option>Grains</option>
+                        <option>Processed</option>
+                        <option>Pottery</option>
+                        <option>Textile</option>
+                        <option>General</option>
+                    </select>
+                    <button class="btn btn-outline" onclick="loadProducts()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+
+                <div class="product-grid" id="productGrid">
+                    <div style="color:var(--muted);grid-column:1/-1;text-align:center;padding:40px">
+                        <i class="fas fa-spinner fa-spin" style="margin-right:8px"></i> Loading products…
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── MY LISTINGS TAB ─── -->
+            <div class="tab-panel" id="tab-my-listings">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+                    <div style="font-size:13px;color:var(--muted)">Your active product listings</div>
+                    <button class="btn btn-primary btn-sm" onclick="openAddListingModal()">
+                        <i class="fas fa-plus"></i> Add New Listing
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="table-wrap" id="myListingsTable">
+                        <div class="empty-state"><i class="fas fa-box-open"></i>
+                            <p>No listings yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── ORDERS TAB ─── -->
+            <div class="tab-panel" id="tab-orders">
+                <div id="orderToggle" style="display:flex;gap:10px;margin-bottom:20px">
+                    <button class="btn btn-outline btn-sm active-tab-btn" id="ordBuyBtn" onclick="loadOrders('buyer')">
+                        <i class="fas fa-shopping-cart"></i> My Purchases
+                    </button>
+                    <button class="btn btn-outline btn-sm" id="ordSellBtn" onclick="loadOrders('seller')">
+                        <i class="fas fa-store"></i> Sales Received
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="table-wrap" id="ordersTable">
+                        <div class="empty-state"><i class="fas fa-receipt"></i>
+                            <p>No orders yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── PRICE AI TAB ─── -->
+            <div class="tab-panel" id="tab-price-ai">
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-brain"></i> AI Price Predictor</div>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size:13px;color:var(--muted);margin-bottom:20px">
+                                Enter your crop/product details. Nomii's AI formula calculates the optimal selling
+                                price.
+                            </p>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Market Price (₹/unit)</label>
+                                    <input class="form-input" type="number" id="prMarket" value="20" min="1">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Days Since Harvest</label>
+                                    <input class="form-input" type="number" id="prDays" value="0" min="0">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Max Shelf Life (days)</label>
+                                    <input class="form-input" type="number" id="prShelf" value="7" min="1">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Demand Index (ratio 0.5–3)</label>
+                                    <input class="form-input" type="number" id="prDemand" value="1.0" step="0.1"
+                                        min="0.1">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Festival Impact (%)</label>
+                                    <input class="form-input" type="number" id="prFestival" value="0" min="0" max="100">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Transport Cost (₹)</label>
+                                    <input class="form-input" type="number" id="prTransport" value="2" min="0">
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary btn-full" id="calcPriceBtn" onclick="calculatePrice()">
+                                <i class="fas fa-calculator"></i>
+                                <span class="btn-text">Calculate Suggested Price</span>
+                                <i class="fas fa-spinner fa-spin spin"></i>
+                            </button>
+
+                            <div class="price-result" id="priceResult">
+                                <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Suggested Selling Price
+                                </div>
+                                <div class="price-main" id="prSuggested">₹0</div>
+                                <div class="price-band" id="prBand">Range: ₹– to ₹–</div>
+                                <div class="price-breakdown" id="prBreakdown"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formula Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-function"></i> Nomii Formula</div>
+                        </div>
+                        <div class="card-body">
+                            <div
+                                style="background:rgba(255,255,255,0.04);border-radius:12px;padding:18px;margin-bottom:16px;font-size:13px;line-height:2">
+                                <div style="font-weight:700;color:var(--accent2);margin-bottom:8px">SuggestedPrice =
+                                </div>
+                                <div style="padding-left:16px;color:var(--text)">
+                                    ( <span style="color:#f8961e">MarketPrice</span>
+                                    × <span style="color:#4cc9f0">DemandMultiplier</span>
+                                    × <span style="color:#2de084">SeasonalFactor</span>
+                                    × <span style="color:#f72585">FreshnessScore</span>
+                                    ) − TransportCost
+                                </div>
+                            </div>
+
+                            <div style="font-size:12px;display:flex;flex-direction:column;gap:10px">
+                                <div style="padding:10px;background:rgba(248,150,30,0.1);border-radius:8px">
+                                    <strong style="color:#f8961e">DemandMultiplier</strong> = CurrentDemand ÷
+                                    AverageDemand
+                                </div>
+                                <div style="padding:10px;background:rgba(45,224,132,0.1);border-radius:8px">
+                                    <strong style="color:#2de084">SeasonalFactor</strong> = 1 + FestivalImpact%
+                                </div>
+                                <div style="padding:10px;background:rgba(247,37,133,0.1);border-radius:8px">
+                                    <strong style="color:#f72585">FreshnessScore</strong> = 1 − (DaysAfterHarvest ÷
+                                    MaxShelfLife)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── LOGISTICS TAB ─── -->
+            <div class="tab-panel" id="tab-logistics">
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-route"></i> Optimal Route (VRP)</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="cluster-grid" id="clusterGrid">
+                                <div class="empty-state"><i class="fas fa-spinner fa-spin"></i></div>
+                            </div>
+                            <div id="routeSummary" style="margin-top:18px"></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-info-circle"></i> VRP Algorithm</div>
+                        </div>
+                        <div class="card-body" style="font-size:13px;line-height:1.9;color:var(--muted)">
+                            <div style="margin-bottom:14px;color:var(--text);font-weight:600">How Nomii Routes
+                                Deliveries</div>
+                            <ol style="padding-left:20px;display:flex;flex-direction:column;gap:10px">
+                                <li><strong style="color:var(--accent2)">K-Means Clustering</strong> — sellers grouped
+                                    by geography into delivery zones</li>
+                                <li><strong style="color:var(--success)">Genetic Algorithm</strong> — optimal visit
+                                    order computed to minimise total cost</li>
+                                <li><strong style="color:var(--warning)">Cost Function</strong> — FuelCost + TimeCost +
+                                    SpoilagePenalty</li>
+                                <li><strong style="color:var(--danger)">Freshness Priority</strong> — perishable goods
+                                    get earlier slots in route</li>
+                            </ol>
+                            <div
+                                style="margin-top:18px;padding:14px;background:rgba(255,255,255,0.04);border-radius:10px">
+                                SpoilagePenalty = FreshnessDecayRate × TravelTime
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── EARNINGS TAB ─── -->
+            <div class="tab-panel" id="tab-earnings">
+                <div class="stats-grid" id="earningsStats"></div>
+                <div class="card" style="margin-top:4px">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-chart-bar"></i> Daily Earnings This Week</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="height:280px">
+                            <canvas id="earningsDetailChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── AI INSIGHTS TAB ─── -->
+            <div class="tab-panel" id="tab-ai-insights">
+                <div class="grid-2" style="margin-bottom:20px">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-star"></i> Credit Score (AI)</div>
+                            <span style="font-size:11px;color:var(--muted)">Logistic Regression Model</span>
+                        </div>
+                        <div class="card-body" id="creditScoreBody">
+                            <div class="empty-state"><i class="fas fa-spinner fa-spin"></i></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-handshake"></i> Smart Matches (K-Means)</div>
+                            <span style="font-size:11px;color:var(--muted)">Recommended Partners</span>
+                        </div>
+                        <div class="card-body" id="matchGrid" style="padding:12px">
+                            <div class="empty-state"><i class="fas fa-spinner fa-spin"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-shield-alt"></i> Deep Risk Analysis (Isolation Forest +
+                            XGBoost Ensemble)</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="grid-2" id="riskProfileGrid">
+                            <div class="empty-state" style="grid-column:1/-1"><i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── CROP ORACLE TAB ─── -->
+            <div class="tab-panel" id="tab-crop-oracle">
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-seedling"></i> Crop Intelligence Oracle</div>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size:13px;color:var(--muted);margin-bottom:18px">
+                                AI-powered seasonal advisory, yield prediction &amp; optimal sell window.
+                            </p>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Select Crop</label>
+                                    <select class="form-select" id="oracleCrop">
+                                        <option value="tomato">🍅 Tomato</option>
+                                        <option value="rice">🌾 Rice</option>
+                                        <option value="banana">🍌 Banana</option>
+                                        <option value="wheat">🌻 Wheat</option>
+                                        <option value="potato">🥔 Potato</option>
+                                        <option value="onion">🧅 Onion</option>
+                                        <option value="sugarcane">🎋 Sugarcane</option>
+                                        <option value="cotton">☁ Cotton</option>
+                                        <option value="maize">🌽 Maize</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Land Size (Acres)</label>
+                                    <input class="form-input" type="number" id="oracleLand" value="1" min="0.1"
+                                        step="0.5">
+                                </div>
+                            </div>
+                            <button class="btn btn-primary btn-full" id="oracleBtn" onclick="runCropOracle()">
+                                <i class="fas fa-magic"></i>
+                                <span class="btn-text">Run Crop Intelligence</span>
+                                <i class="fas fa-spinner fa-spin spin"></i>
+                            </button>
+                            <div id="cropOracleResult" class="price-result" style="margin-top:16px">
+                                <div id="oracleAdvisory"
+                                    style="font-size:13px;margin-bottom:12px;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px">
+                                </div>
+                                <div class="price-breakdown" id="oracleBreakdown"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-chart-line"></i> Crop Price Trend</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="cropTrendChart"></canvas>
+                            </div>
+                            <div id="bestWindowInfo" style="margin-top:12px;font-size:13px;color:var(--muted)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── ECOSYSTEM GRAPH TAB ─── -->
+            <div class="tab-panel" id="tab-ecosystem">
+                <div class="card" style="margin-bottom:20px">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-project-diagram"></i> Supply Chain Ecosystem Graph
+                            (GNN)</div>
+                        <button class="btn btn-outline btn-sm" onclick="loadEcosystem()"><i class="fas fa-sync-alt"></i>
+                            Refresh</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="ecosystemStats" style="display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap"></div>
+                        <canvas id="ecosystemCanvas" style="border:1px solid var(--border);border-radius:12px;
+                    background:rgba(255,255,255,0.02);width:100%;height:380px"></canvas>
+                        <div id="ecosystemLegend"
+                            style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;font-size:12px"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-info-circle"></i> Graph Network Analysis</div>
+                    </div>
+                    <div class="card-body" id="ecosystemInsights">
+                        <div class="empty-state"><i class="fas fa-spinner fa-spin"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── SMART ALERTS TAB ─── -->
+            <div class="tab-panel" id="tab-alerts">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+                    <div>
+                        <div style="font-size:15px;font-weight:700">Event-Driven Smart Alerts</div>
+                        <div style="font-size:13px;color:var(--muted)">AI-triggered notifications from automated
+                            monitoring</div>
+                    </div>
+                    <button class="btn btn-outline btn-sm" onclick="loadSmartAlerts()"><i class="fas fa-sync-alt"></i>
+                        Refresh</button>
+                </div>
+                <div id="smartAlertsList">
+                    <div class="empty-state"><i class="fas fa-spinner fa-spin"></i></div>
+                </div>
+                <div class="card" style="margin-top:20px">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-robot"></i> Automation Rules (RPA Engine)</div>
+                    </div>
+                    <div class="card-body">
+                        <div style="display:flex;flex-direction:column;gap:12px">
+                            <div
+                                style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:rgba(255,255,255,0.04);border-radius:10px">
+                                <div>
+                                    <div style="font-weight:600;font-size:13px">If Fraud Score &gt; 50% → Manual Review
+                                        Queue</div>
+                                    <div style="font-size:12px;color:var(--muted)">Isolation Forest trigger</div>
+                                </div>
+                                <span class="badge badge-active">Active</span>
+                            </div>
+                            <div
+                                style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:rgba(255,255,255,0.04);border-radius:10px">
+                                <div>
+                                    <div style="font-weight:600;font-size:13px">If Stock Low (&lt; 10) → Auto Reorder
+                                        Suggestion</div>
+                                    <div style="font-size:12px;color:var(--muted)">Moving average threshold</div>
+                                </div>
+                                <span class="badge badge-active">Active</span>
+                            </div>
+                            <div
+                                style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:rgba(255,255,255,0.04);border-radius:10px">
+                                <div>
+                                    <div style="font-weight:600;font-size:13px">Season → Auto Crop Advisory for Farmers
+                                    </div>
+                                    <div style="font-size:12px;color:var(--muted)">NDVI + Calendar model</div>
+                                </div>
+                                <span class="badge badge-active">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── LSTM FORECAST TAB ─── -->
+            <div class="tab-panel" id="tab-lstm">
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-brain"></i> LSTM Demand Forecast</div>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size:13px;color:var(--muted);margin-bottom:18px">
+                                Holt Double Exponential Smoothing — LSTM proxy. 3-month price forecast.
+                            </p>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Crop</label>
+                                    <select class="form-select" id="lstmCrop">
+                                        <option value="tomato">Tomato</option>
+                                        <option value="rice">Rice</option>
+                                        <option value="banana">Banana</option>
+                                        <option value="wheat">Wheat</option>
+                                        <option value="potato">Potato</option>
+                                        <option value="onion">Onion</option>
+                                        <option value="maize">Maize</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Data Mode</label>
+                                    <select class="form-select" id="lstmMode"
+                                        onchange="document.getElementById('lstmManualInput').style.display=this.value==='manual'?'block':'none'">
+                                        <option value="auto">Auto (AI generated)</option>
+                                        <option value="manual">Manual input</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="lstmManualInput" style="display:none;margin-bottom:14px">
+                                <label class="form-label">Monthly Prices (comma-separated, min 2 values)</label>
+                                <input class="form-input" id="lstmPrices"
+                                    placeholder="18,20,19,22,25,21,18,17,19,22,24,23">
+                            </div>
+                            <button class="btn btn-primary btn-full" id="lstmBtn" onclick="runLSTM()">
+                                <i class="fas fa-chart-area"></i>
+                                <span class="btn-text">Run LSTM Forecast</span>
+                                <i class="fas fa-spinner fa-spin spin"></i>
+                            </button>
+                            <div id="lstmSummary" style="margin-top:16px;display:none">
+                                <div id="lstmTrend" style="font-size:18px;font-weight:800;margin-bottom:8px"></div>
+                                <div id="lstmForecastValues" class="price-breakdown"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-chart-area"></i> Historical + Forecast Chart</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container" style="height:260px"><canvas id="lstmChart"></canvas></div>
+                            <div id="lstmModelInfo"
+                                style="margin-top:12px;font-size:12px;color:var(--muted);background:rgba(255,255,255,0.04);padding:10px;border-radius:8px">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── WEATHER + NDVI TAB ─── -->
+            <div class="tab-panel" id="tab-weather">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-cloud-sun"></i> Live Weather + NDVI Advisory</div>
+                        <span style="font-size:11px;color:var(--muted)">OpenWeatherMap + Sentinel Satellite
+                            (Proxy)</span>
+                    </div>
+                    <div class="card-body" id="weatherBody">
+                        <div class="empty-state"><i class="fas fa-spinner fa-spin"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── MARKET PRICES TAB ─── -->
+            <div class="tab-panel" id="tab-market-prices">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-chart-line"></i> Mandi Market Prices</div>
+                        <span style="font-size:11px;color:var(--muted)">Agmarknet-style · 12 Crops · 8 Mandis</span>
+                    </div>
+                    <div class="card-body" id="marketBody">
+                        <div class="empty-state"><i class="fas fa-spinner fa-spin"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── SUPPLY CHAIN TAB ─── -->
+            <div class="tab-panel" id="tab-supply-chain">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-project-diagram"></i> Supply Chain Journey</div>
+                        <span style="font-size:11px;color:var(--muted)">Farmer → Supplier → Retailer → Delivery</span>
+                    </div>
+                    <div class="card-body" id="supplyBody">
+                        <div class="empty-state"><i class="fas fa-spinner fa-spin"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── API HUB TAB ─── -->
+            <div class="tab-panel" id="tab-api-hub">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-plug"></i> API Integration Hub</div>
+                        <span style="font-size:11px;color:var(--muted)">22 APIs · Agriculture · Weather · AI/ML ·
+                            Logistics · Payments</span>
+                    </div>
+                    <div class="card-body" id="apiHubBody">
+                        <div class="empty-state"><i class="fas fa-spinner fa-spin"></i></div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /content -->
+    </div><!-- /main -->
+
+
+
+    <!-- ─── ORDER MODAL ─── -->
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal">
+            <div class="modal-title"><i class="fas fa-shopping-cart"></i> Place Order</div>
+            <div id="orderModalProduct"
+                style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px;margin-bottom:18px;font-size:14px">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Quantity</label>
+                <input class="form-input" type="number" id="orderQty" value="1" min="0.1" step="0.1">
+            </div>
+            <div id="orderTotal" style="font-size:13px;color:var(--muted);margin-bottom:18px"></div>
+            <div style="display:flex;gap:10px">
+                <button class="btn btn-outline btn-full" onclick="closeModal('orderModal')">Cancel</button>
+                <button class="btn btn-success btn-full" id="placeOrderBtn" onclick="submitOrder()">
+                    <i class="fas fa-lock"></i> Pay & Escrow
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── CONFIRM DELIVERY MODAL ─── -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <div class="modal-title"><i class="fas fa-check-circle"></i> Confirm Delivery</div>
+            <p style="color:var(--muted);font-size:14px;margin-bottom:18px">Enter the 6-digit OTP received to release
+                payment from escrow.</p>
+            <div class="form-group">
+                <label class="form-label">Delivery OTP</label>
+                <input class="form-input" type="text" id="deliveryOtp" placeholder="6-digit OTP" maxlength="6"
+                    inputmode="numeric">
+            </div>
+            <input type="hidden" id="confirmOrderId">
+            <div style="display:flex;gap:10px">
+                <button class="btn btn-outline btn-full" onclick="closeModal('confirmModal')">Cancel</button>
+                <button class="btn btn-success btn-full" onclick="submitConfirm()">
+                    <i class="fas fa-check"></i> Confirm & Release
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── ADD LISTING MODAL ─── -->
+    <div class="modal-overlay" id="addListingModal">
+        <div class="modal" style="max-width:520px">
+            <div class="modal-title"><i class="fas fa-plus-circle"></i> Add New Listing</div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Product Name</label>
+                    <input class="form-input" type="text" id="lstName" placeholder="e.g. Tomato">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" id="lstCategory">
+                        <option>Vegetables</option>
+                        <option>Fruits</option>
+                        <option>Grains</option>
+                        <option>Processed</option>
+                        <option>Pottery</option>
+                        <option>Textile</option>
+                        <option>General</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Quantity</label>
+                    <input class="form-input" type="number" id="lstQty" placeholder="e.g. 100" min="0.1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Unit</label>
+                    <select class="form-select" id="lstUnit">
+                        <option>kg</option>
+                        <option>pc</option>
+                        <option>litre</option>
+                        <option>dozen</option>
+                        <option>quintal</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Your Price (₹)</label>
+                    <input class="form-input" type="number" id="lstPrice" placeholder="e.g. 25" min="0.1" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Market Price (₹)</label>
+                    <input class="form-input" type="number" id="lstMarket" placeholder="e.g. 30" min="0.1" step="0.1">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Harvest Date</label>
+                    <input class="form-input" type="date" id="lstHarvest">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Location</label>
+                    <input class="form-input" type="text" id="lstLocation" placeholder="Village / City">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Description (optional)</label>
+                <textarea class="form-textarea" id="lstDesc" placeholder="Quality, variety, etc."></textarea>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:4px">
+                <button class="btn btn-outline btn-full" onclick="closeModal('addListingModal')">Cancel</button>
+                <button class="btn btn-primary btn-full" id="submitListingBtn" onclick="submitListing()">
+                    <i class="fas fa-check"></i> List Product
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- ─── FLOATING CHATBOT ─── -->
+    <div id="chatWidget" style="position:fixed;bottom:24px;right:24px;z-index:800">
+        <button id="chatToggle" onclick="toggleChat()" style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--role-color),var(--accent2));
+               border:none;cursor:pointer;color:#fff;font-size:22px;box-shadow:0 8px 30px rgba(0,0,0,0.4);
+               display:grid;place-items:center;transition:all 0.3s" title="Nomii AI Chat">
+            <i class="fas fa-robot"></i>
+        </button>
+
+        <div id="chatBox" style="display:none;position:absolute;bottom:70px;right:0;width:330px;
+               background:var(--bg-card);border:1px solid var(--border);border-radius:16px;
+               box-shadow:0 20px 60px rgba(0,0,0,0.5);overflow:hidden">
+            <div style="background:linear-gradient(135deg,var(--role-color),var(--accent2));
+                    padding:14px 18px;display:flex;align-items:center;gap:10px">
+                <i class="fas fa-robot" style="font-size:20px;color:#fff"></i>
+                <div>
+                    <div style="font-weight:700;color:#fff;font-size:14px">Nomii AI Assistant</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.7)">EN · हिन्दी · தமிழ்</div>
+                </div>
+                <button onclick="toggleChat()" style="margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.7);
+                   cursor:pointer;font-size:18px;padding:0;width:auto">×</button>
+            </div>
+
+            <div id="chatMessages"
+                style="height:280px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px">
+                <div style="padding:10px 12px;background:rgba(67,97,238,0.15);border-radius:10px 10px 10px 0;
+                      font-size:13px;max-width:85%">
+                    👋 Hello! I'm Nomii AI. Ask me anything about orders, prices, crops, loans or fraud protection.
+                    I speak English, हिन्दी & தமிழ்!
+                </div>
+            </div>
+
+            <div style="padding:12px;border-top:1px solid var(--border);display:flex;gap:8px">
+                <input id="chatInput" class="form-input" placeholder="Ask anything…"
+                    style="flex:1;padding:8px 12px;font-size:13px" onkeydown="if(event.key==='Enter')sendChat()">
+                <button class="btn btn-primary btn-sm" style="padding:8px 14px" onclick="sendChat()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Extra AI styles -->
+    <style>
+        /* ─── Badge ─── */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge-active {
+            background: rgba(45, 224, 132, 0.18);
+            color: var(--success);
+            border: 1px solid rgba(45, 224, 132, 0.4);
+        }
+
+        /* ─── Price breakdown rows (Crop Oracle / LSTM) ─── */
+        .pbr {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 13px;
+        }
+
+        .pbr:last-child {
+            border-bottom: none;
+        }
+
+        .pbr-key {
+            color: var(--muted);
+        }
+
+        .pbr-val {
+            font-weight: 700;
+        }
+
+        /* ─── Alert banner (credit score) ─── */
+        .alert-banner {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .alert-banner.alert-success {
+            background: rgba(45, 224, 132, 0.1);
+            border: 1px solid rgba(45, 224, 132, 0.35);
+        }
+
+        .alert-banner.alert-warning {
+            background: rgba(248, 150, 30, 0.1);
+            border: 1px solid rgba(248, 150, 30, 0.35);
+        }
+
+        .match-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .match-card:hover {
+            border-color: var(--role-color);
+            transform: translateY(-1px);
+        }
+
+        .match-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            font-size: 20px;
+            display: grid;
+            place-items: center;
+            background: rgba(67, 97, 238, 0.15);
+            flex-shrink: 0;
+        }
+
+        .match-score-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .match-score-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--role-color), var(--accent2));
+            border-radius: 2px;
+        }
+
+        .credit-meter {
+            position: relative;
+            width: 160px;
+            height: 80px;
+            overflow: hidden;
+            margin: 0 auto 16px;
+        }
+
+        .credit-arc {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 12px solid rgba(255, 255, 255, 0.07);
+            border-bottom-color: transparent;
+            border-right-color: transparent;
+            transform: rotate(-135deg);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .credit-arc-fill {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 12px solid transparent;
+            border-top-color: var(--credit-color, #2de084);
+            border-left-color: var(--credit-color, #2de084);
+            transform: rotate(-135deg) rotate(var(--credit-deg, 0deg));
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 1s ease;
+        }
+
+        .alert-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-left: 4px solid;
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .alert-item.warning {
+            border-left-color: var(--warning);
+        }
+
+        .alert-item.info {
+            border-left-color: var(--accent);
+        }
+
+        .alert-item.success {
+            border-left-color: var(--success);
+        }
+
+        .alert-item.danger {
+            border-left-color: var(--danger);
+        }
+
+        .risk-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 4px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .risk-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .chat-bubble-user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--role-color), var(--accent2));
+            color: #fff;
+            padding: 9px 13px;
+            border-radius: 12px 12px 0 12px;
+            font-size: 13px;
+            max-width: 85%;
+        }
+
+        .chat-bubble-ai {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.07);
+            padding: 9px 13px;
+            border-radius: 12px 12px 12px 0;
+            font-size: 13px;
+            max-width: 85%;
+            line-height: 1.5;
+        }
+
+        #lstmMode:change+#lstmManualInput {
+            display: block;
+        }
+
+        /* ═══ ECOSYSTEM2 CSS ═══════════════════════════════════════ */
+        .eco-spinner,
+        .eco-err,
+        .eco-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--muted);
+            gap: 10px;
+            font-size: 14px
+        }
+
+        .eco-err {
+            color: #e74c3c
+        }
+
+        /* Weather */
+        .w-grid {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 16px
+        }
+
+        @media(max-width:820px) {
+            .w-grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .w-main-card,
+        .w-ndvi-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px
+        }
+
+        .w-city-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px
+        }
+
+        .w-city {
+            font-size: 18px;
+            font-weight: 700
+        }
+
+        .w-live-badge {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600
+        }
+
+        .w-live-badge.live {
+            background: rgba(45, 224, 132, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(45, 224, 132, 0.3)
+        }
+
+        .w-live-badge.sim {
+            background: rgba(108, 92, 231, 0.15);
+            color: #a29bfe;
+            border: 1px solid rgba(108, 92, 231, 0.3)
+        }
+
+        .w-temp-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 10px
+        }
+
+        .w-big-icon {
+            font-size: 42px
+        }
+
+        .w-temp {
+            font-size: 52px;
+            font-weight: 800;
+            line-height: 1
+        }
+
+        .w-sub-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 13px;
+            color: var(--muted)
+        }
+
+        .w-desc {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 14px;
+            text-transform: capitalize
+        }
+
+        .w-advisory {
+            background: rgba(45, 224, 132, 0.08);
+            border: 1px solid rgba(45, 224, 132, 0.2);
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 13px;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start
+        }
+
+        .ndvi-gauge-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 12px
+        }
+
+        .ndvi-num {
+            font-size: 28px;
+            font-weight: 800;
+            margin-top: -10px
+        }
+
+        .ndvi-label {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 8px
+        }
+
+        .w-search-row {
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+
+        /* Market Prices */
+        .mkt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px
+        }
+
+        .mkt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px
+        }
+
+        .mkt-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            transition: .2s
+        }
+
+        .mkt-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px)
+        }
+
+        .mkt-crop {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: 4px
+        }
+
+        .mkt-price {
+            font-size: 22px;
+            font-weight: 800;
+            line-height: 1
+        }
+
+        .mkt-unit {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--muted)
+        }
+
+        .mkt-change {
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 2px
+        }
+
+        .mkt-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 6px
+        }
+
+        /* Supply Chain */
+        .sc-stats-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 18px
+        }
+
+        .sc-stat {
+            flex: 1;
+            min-width: 80px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .sc-stat-n {
+            display: block;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text)
+        }
+
+        .sc-order-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px
+        }
+
+        .sc-order-hdr {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px
+        }
+
+        .sc-order-id {
+            font-size: 11px;
+            color: var(--muted)
+        }
+
+        .sc-order-meta {
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .sc-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px
+        }
+
+        .sc-badge-placed {
+            background: rgba(108, 92, 231, 0.15);
+            color: #a29bfe;
+            border: 1px solid rgba(108, 92, 231, 0.3)
+        }
+
+        .sc-badge-confirmed {
+            background: rgba(248, 150, 30, 0.15);
+            color: #f8961e;
+            border: 1px solid rgba(248, 150, 30, 0.3)
+        }
+
+        .sc-badge-shipped,
+        .sc-badge-in.transit {
+            background: rgba(67, 97, 238, 0.15);
+            color: #4361ee;
+            border: 1px solid rgba(67, 97, 238, 0.3)
+        }
+
+        .sc-badge-delivered {
+            background: rgba(45, 224, 132, 0.15);
+            color: #2de084;
+            border: 1px solid rgba(45, 224, 132, 0.3)
+        }
+
+        .sc-pipeline {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px
+        }
+
+        .sc-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            opacity: .4;
+            transition: .3s
+        }
+
+        .sc-step.done {
+            opacity: 1
+        }
+
+        .sc-step-icon {
+            font-size: 20px
+        }
+
+        .sc-step-label {
+            font-size: 10px;
+            color: var(--muted);
+            text-align: center
+        }
+
+        .sc-arrow {
+            font-size: 16px;
+            color: var(--muted);
+            opacity: .4;
+            padding: 0 2px
+        }
+
+        .sc-arrow.done {
+            color: var(--success);
+            opacity: 1
+        }
+
+        /* API Hub */
+        .hub-stats-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 18px
+        }
+
+        .hub-stat {
+            flex: 1;
+            min-width: 70px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--muted)
+        }
+
+        .hub-n {
+            display: block;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text)
+        }
+
+        .hub-category {
+            margin-bottom: 20px
+        }
+
+        .hub-cat-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            color: var(--muted);
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 4px
+        }
+
+        .hub-api-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 10px
+        }
+
+        .hub-api-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            transition: .2s
+        }
+
+        .hub-api-card:hover {
+            border-color: rgba(255, 255, 255, 0.2)
+        }
+
+        .hub-api-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 6px
+        }
+
+        .hub-api-icon {
+            font-size: 22px;
+            flex-shrink: 0
+        }
+
+        .hub-api-name {
+            font-weight: 600;
+            font-size: 13px
+        }
+
+        .hub-api-name a {
+            color: var(--text);
+            text-decoration: none
+        }
+
+        .hub-api-name a:hover {
+            color: var(--accent)
+        }
+
+        .hub-api-status {
+            font-size: 11px;
+            margin-top: 2px
+        }
+
+        .hub-api-desc {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.4
+        }
+
+        .hub-free-badge {
+            margin-left: auto;
+            background: rgba(45, 224, 132, 0.12);
+            color: var(--success);
+            border: 1px solid rgba(45, 224, 132, 0.3);
+            border-radius: 20px;
+            padding: 2px 8px;
+            font-size: 10px;
+            font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0
+        }
+    </style>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Data injected from Flask -->
+    <script>
+        const USER_DATA = {{ user | tojson }};
+    </script>
+    <script src="/static/dashboard.js?v=5"></script>
+    <script src="/static/ai_modules.js?v=5"></script>
+    <script src="/static/ecosystem2.js?v=5"></script>
+</body>
+
+</html>
